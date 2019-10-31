@@ -64,12 +64,11 @@ ClassMethod createFormObject(class As %String) As %Status
 	set sc = ..checkObjPermission(class, "C")
 	return:$$$ISERR(sc) sc
 	
-	set obj = %request.Content
-	set objClass = $className(obj)
-	return:objClass'=class $$$ERROR("Expected instance of '" _ class _ "' class, received instance of '" _ objClass _ "'")
+	set obj = $classmethod(class, "%New")
+	set sc = obj.%JSONImport(%request.Content)
+	if $$$ISERR(sc) return sc
 	
 	set sc = obj.%Save()
-	
 	if $$$ISOK(sc) {
 		 write "{""Id"": """ _ obj.%Id() _ """}" 
 	}
@@ -84,8 +83,12 @@ ClassMethod updateFormDynamicObject(class As %String, id As %Integer = "") As %S
 	set sc = ..checkObjPermission(class, "U")
 	return:$$$ISERR(sc) sc
 	
-	set obj = %request.Content
-	set sc = $classMethod(class, $$$updateClassMethod ,id, obj)
+	// TODO: check if $$$updateClassMethod (updateIdFromObject) is used anywhere else
+	
+	set obj = $classmethod(class, "%OpenId", id)
+	set sc = obj.%JSONImport(%request.Content)
+	if $$$ISERR(sc) return sc
+	set sc = obj.%Save()
 	
 	return sc
 }

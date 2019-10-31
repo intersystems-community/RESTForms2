@@ -26,7 +26,7 @@ Property num As %Numeric(DISPLAYNAME = "Number") [ InitialExpression = "2.15" ];
 
 /// Person's age.<br>
 /// This is a calculated field whose value is derived from <property>DOB</property>.
-Property аge As %Integer(DISPLAYNAME = "Age") [ Calculated, SqlComputeCode = { set {*}=##class(Form.Test.Person).currentAge({dob})}, SqlComputed, SqlComputeOnChange = dob ];
+Property аge As %Integer(%JSONINCLUDE = "OUTPUTONLY", DISPLAYNAME = "Age") [ Calculated, SqlComputeCode = { set {*}=##class(Form.Test.Person).currentAge({dob})}, SqlComputed, SqlComputeOnChange = dob ];
 
 /// This class method calculates a current age given a date of birth <var>date</var>.
 ClassMethod currentAge(date As %Date = "") As %Integer [ CodeMode = expression ]

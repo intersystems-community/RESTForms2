@@ -55,7 +55,7 @@ ClassMethod getDebugInfo() As %ZEN.proxyObject
 	set obj.stack = ..getStackInfo()
 	set obj.objlasterror = $system.Status.GetErrorText($get(%objlasterror))
 	set obj.request = %request
-	set obj.responce = %response
+	set obj.response = %response
 	set obj.user = $username
 	
 	return obj
@@ -91,24 +91,16 @@ ClassMethod OnPreDispatch(pUrl As %String, pMethod As %String, ByRef pContinue A
 ClassMethod convertRequestBody() As %Status
 {
 	#dim %request As %CSP.Request
-	#dim obj As %ZEN.proxyObject
 	
 	return:'$isObject(%request.Content) $$$OK // нет тела запроса
 	return:'$$$classIsStream($className(%request.Content)) $$$OK // уже сконвертировали
-	// Конвертируем объект в UTF8 %ZEN.proxyObject
 	set content = %request.Content.Read($$$MaxStringLength)
 	set content = $ZCVT(content,"I","UTF8") 
-	set:$$$debug %objlasterror = ""
-	set sc = ##class(Form.JSON.OBJ).%ConvertJSONToObject(content,,.obj,1)
 	
-	if $$$debug {
-		zw obj
-		write $System.Status.GetErrorText(%objlasterror)
-	}
-	return:$$$ISERR(sc) sc
-	return:'$isObject(obj) $$$ERROR($$$ArgumentIsNotAnObject,"Body")
+	set contentStream = ##class(%CSP.BinaryStream).%New()
+	do contentStream.Write(content)
+	set %request.Content = contentStream
 	
-	set %request.Content = obj // obj это валидный UTF8 %ZEN.proxyObject
 	return $$$OK
 }
 
