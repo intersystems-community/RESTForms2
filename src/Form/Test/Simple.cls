@@ -60,7 +60,7 @@ Storage Default
 <IdLocation>^Form.Test.SimpleD</IdLocation>
 <IndexLocation>^Form.Test.SimpleI</IndexLocation>
 <StreamLocation>^Form.Test.SimpleS</StreamLocation>
-<Type>%Library.CacheStorage</Type>
+<Type>%Storage.Persistent</Type>
 }
 
 }

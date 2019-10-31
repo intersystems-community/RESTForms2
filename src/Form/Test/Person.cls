@@ -121,7 +121,7 @@ Storage Default
 <BlockCount>-4</BlockCount>
 </SQLMap>
 <StreamLocation>^Form.Test.PersonS</StreamLocation>
-<Type>%Library.CacheStorage</Type>
+<Type>%Storage.Persistent</Type>
 }
 
 }

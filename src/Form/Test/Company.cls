@@ -34,7 +34,7 @@ Storage Default
 <IdLocation>^Form.Test.CompanyD</IdLocation>
 <IndexLocation>^Form.Test.CompanyI</IndexLocation>
 <StreamLocation>^Form.Test.CompanyS</StreamLocation>
-<Type>%Library.CacheStorage</Type>
+<Type>%Storage.Persistent</Type>
 }
 
 }

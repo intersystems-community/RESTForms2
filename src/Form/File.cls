@@ -90,7 +90,7 @@ Storage Default
 <IdLocation>^Form.FileD</IdLocation>
 <IndexLocation>^Form.FileI</IndexLocation>
 <StreamLocation>^Form.FileS</StreamLocation>
-<Type>%Library.CacheStorage</Type>
+<Type>%Storage.Persistent</Type>
 }
 
 }

@@ -24,7 +24,7 @@ Storage Default
 </Data>
 <State>AddressState</State>
 <StreamLocation>^Form.Test.AddressS</StreamLocation>
-<Type>%Library.CacheSerialState</Type>
+<Type>%Storage.Serial</Type>
 }
 
 }
