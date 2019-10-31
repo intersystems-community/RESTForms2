@@ -1,4 +1,4 @@
-Class Form.Test.Address Extends (%SerialObject, %Populate)
+Class Form.Test.Address Extends (%SerialObject, %JSON.Adaptor, %Populate)
 {
 
 Property House As %Integer(MAXVAL = 999, MINVAL = 1);

@@ -1,7 +1,7 @@
 Include Form
 
 /// Base form adaptor class, all forms must inherit from this class
-Class Form.Adaptor Extends (Form.Security, Form.Generators) [ Abstract, CompileAfter = Form.Info, DependsOn = Form.Info, PropertyClass = Form.Field ]
+Class Form.Adaptor Extends (%JSON.Adaptor, Form.Security, Form.Generators) [ Abstract, CompileAfter = Form.Info, DependsOn = Form.Info, PropertyClass = Form.Field ]
 {
 
 /// Form name, not a global key so it can be anything
