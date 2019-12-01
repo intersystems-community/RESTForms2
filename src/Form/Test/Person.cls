@@ -13,7 +13,7 @@ Parameter FORMORDERBY As %String = "dob";
 
 /// Person's name.
 /// Use only first 250 symbols for comparison.
-/// Required for all long properties used by "order by" 
+/// Required for all long properties used by "order by"
 Property name As %String(COLLATION = "TRUNCATE(250)", DISPLAYNAME = "Name", MAXLEN = 2000);
 
 /// Person's gender
@@ -34,9 +34,9 @@ ClassMethod currentAge(date As %Date = "") As %Integer [ CodeMode = expression ]
 $Select(date="":"",1:($ZD($H,8)-$ZD(date,8)\10000))
 }
 
-/// Person's spouse. 
+/// Person's spouse.
 /// This is a reference to another persistent object.
-Property relative As Form.Test.Person(DISPLAYNAME = "Relative");
+Property relative As Form.Test.Person(%JSONREFERENCE = "ID", DISPLAYNAME = "Relative");
 
 /// Person's home address. This uses an embedded object.
 Property Home As Form.Test.Address(DISPLAYNAME = "House");
