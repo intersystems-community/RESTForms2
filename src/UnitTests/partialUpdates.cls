@@ -1,4 +1,4 @@
-Class UnitTests.Integretion.PartialUpdates Extends %UnitTest.TestCase
+Class UnitTests.PartialUpdates Extends %UnitTest.TestCase
 {
 
 Method OnAfterAllTests() As %Status
@@ -9,14 +9,7 @@ Method OnAfterAllTests() As %Status
 
 ClassMethod CreatePerson(Output id As %String = "", name As %String, dob As %Date = "", num As %Integer = "") As %Status
 {
-  Set person = ##class(Form.Test.Person).%New()
-  Set person.name = name
-  Set:(dob'="") person.dob = dob
-  Set:(num'="") person.num = num
-  Set tSC = person.%Save()
-	Quit:$$$ISERR(tSC) tSC
-  Set id = person.%Id()
-  Quit tSC
+  Quit ##class(UnitTests.Factory).CreatePerson(.id, name, dob, num)
 }
 
 ClassMethod FindPerson(id As %String) As %SQL.StatementResult

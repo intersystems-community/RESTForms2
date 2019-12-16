@@ -20,9 +20,21 @@ Property name As %String(COLLATION = "TRUNCATE(250)", DISPLAYNAME = "Name", MAXL
 /// Person's Date of Birth.
 Property dob As %Date(DISPLAYNAME = "Date of Birth", POPSPEC = "Date()");
 
-Property ts As %TimeStamp(DISPLAYNAME = "Timestamp") [ InitialExpression = {$ZDATETIME($ZTIMESTAMP, 3, 1, 3)} ];
+Property ts As %TimeStamp(DISPLAYNAME = "Timestamp") [ InitialExpression = {$ZDatetime($ZTimestamp, 3, 1, 3)} ];
 
 Property num As %Numeric(DISPLAYNAME = "Number") [ InitialExpression = "2.15" ];
+
+ClassMethod queryLIST() As %String
+{
+  Quit "name, dob, аge "
+}
+
+ClassMethod customquerySAMPLE() As %String
+{
+  Quit "Select company->Name as company, name, ""relative""->name as partner, "_
+    "аge, Home_City, Home_House, Home_Street "_
+    "FROM Form_Test.Person"
+}
 
 /// Person's age.<br>
 /// This is a calculated field whose value is derived from <property>DOB</property>.
@@ -31,7 +43,7 @@ Property аge As %Integer(%JSONINCLUDE = "OUTPUTONLY", DISPLAYNAME = "Age") [ Ca
 /// This class method calculates a current age given a date of birth <var>date</var>.
 ClassMethod currentAge(date As %Date = "") As %Integer [ CodeMode = expression ]
 {
-$Select(date="":"",1:($ZD($H,8)-$ZD(date,8)\10000))
+$Select(date="":"",1:($ZDate($Horolog,8)-$ZDate(date,8)\10000))
 }
 
 /// Person's spouse.
@@ -42,7 +54,7 @@ Property relative As Form.Test.Person(%JSONREFERENCE = "ID", DISPLAYNAME = "Rela
 Property Home As Form.Test.Address(DISPLAYNAME = "House");
 
 /// The company this person works for.
-Relationship company As Form.Test.Company(DISPLAYNAME = "Company") [ Cardinality = one, Inverse = employees ];
+Relationship company As Form.Test.Company(%JSONREFERENCE = "ID", DISPLAYNAME = "Company") [ Cardinality = one, Inverse = employees ];
 
 /// Property amount As %Double(DISPLAYNAME = "double", POPSPEC = "Float(0,100,2)");
 Storage Default
