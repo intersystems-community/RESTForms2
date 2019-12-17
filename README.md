@@ -1,6 +1,14 @@
 # RESTForms
 RESTForms is a generalized REST API backend for web applications built on InterSystems (Caché or Ensemble) backend.
 
+# Development installation
+
+This is a development version.
+
+1. Clone repo
+2. Build development image: `docker-compose build`
+3. Run container: `docker-compose up -d`
+
 # Installation
 
 1. Import latest [release](https://github.com/intersystems-ru/RESTForms/releases) appropriate for your Caché version (161 for 2016.1, 162 for 2016.2+).
