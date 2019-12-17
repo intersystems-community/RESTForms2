@@ -6,29 +6,30 @@ Class Form.JSON.SQL Extends %ZEN.Auxiliary.altJSONSQLProvider
 ClassMethod WriteJSONFromSQL(sql As %String, conditionClass = "") As %Status
 {
 	#dim sc As %Status = $$$OK
-	set provider = ..%New()
-	set provider.maxRows = $$$MaxCacheInt
-	set provider.%Format = $$$formatJSONSQL
-	
-	if ((##class(%Dictionary.CompiledClass).IDKEYExists(conditionClass)) && $$$webContext) {
-		set sc = ..ParseWhere(%request.Get("filter"), %request.Get("collation"), conditionClass, .where)
-		set sc = $$$ADDSC(sc, ..ParseOrderBy(%request.Get("orderby"), conditionClass, .orderBy))
-		set sql = sql _ where _ orderBy
-	} ElseIf (conditionClass'="") {
-		set sc = $$$ERROR($$$GeneralError, "Condition class " _ conditionClass _ " does not exist")
+	Set provider = ..%New()
+	Set provider.maxRows = $$$MaxCacheInt
+	Set provider.%Format = $$$formatJSONSQL
+
+	If ((##class(%Dictionary.CompiledClass).IDKEYExists(conditionClass)) && $$$webContext) {
+		Set sc = ..ParseWhere(%request.Get("filter"), %request.Get("collation"), conditionClass, .where)
+		Set sc = $$$ADDSC(sc, ..ParseOrderBy(%request.Get("orderby"), conditionClass, .orderBy))
+		Set sql = sql _ where _ orderBy
 	}
-	return:$$$ISERR(sc) sc 
-	
-	set provider.sql = sql
-	if $$$webContext {
-		set provider.pageSize = %request.Get("size", 25)
-		set provider.currPage = %request.Get("page", 1)
+  ElseIf (conditionClass'="") {
+		Set sc = $$$ERROR($$$GeneralError, "Condition class " _ conditionClass _ " does not exist")
+	}
+	Return:$$$ISERR(sc) sc
+
+	Set provider.sql = sql
+	If $$$webContext {
+		Set provider.pageSize = %request.Get("size", 25)
+		Set provider.currPage = %request.Get("page", 1)
 	}
 
-	set nocount = %request.Get("nocount", $$$NO)
-	
-	set sc = provider.%DrawJSON(nocount)
-	return sc
+	Set nocount = %request.Get("nocount", $$$NO)
+
+	Set sc = provider.%DrawJSON(nocount)
+	Return sc
 }
 
 /// Parse where condition:
@@ -37,170 +38,175 @@ ClassMethod WriteJSONFromSQL(sql As %String, conditionClass = "") As %Status
 ClassMethod ParseWhere(input, collation As %String(VALUELIST=",SQLUPPER,EXACT") = "", conditionClass, Output condition) As %Status
 {
 	#dim sc As %Status = $$$OK
-	kill condition
-	set condition = ""
-	set:$e(input,1)="(" input = $e(input,2,*-1)
-	return:input="" sc
-	
-	set:collation'="" collation = "%" _ collation
-	set condList = $LFS(input," ")
-	set listLength= $LL(condList)
-	
-	if listLength#3'=0 {
-		return $$$ERROR($$$GeneralError, "Incorrect number of filter arguments")
+	Kill condition
+	Set condition = ""
+	Set:$Extract(input,1)="(" input = $Extract(input,2,*-1)
+	Return:input="" sc
+
+	Set:collation'="" collation = "%" _ collation
+	Set condList = $Listfromstring(input," ")
+	Set listLength = $Listlength(condList)
+
+	If listLength#3'=0 {
+		Return $$$ERROR($$$GeneralError, "Incorrect number of filter arguments")
 	}
-	
-	set condition = " WHERE "
-	
-	for i=1:3:listLength {
-		set:i'=1 condition = condition _ " AND "
-		set column = $lg(condList,i)
-		set predicate = $lg(condList,i+1)
-		set value = $TR($lg(condList,i+2),$c(9)," ") // replaces <TAB> in filter values eith whitespaces 
-		set value = $TR(value,"'"";")
-		
-		set columnValid = ..ParseColumn(.column, conditionClass, .propertyClass)
-		return:'columnValid $$$ERROR($$$GeneralError,"Filter column '" _column _ "' is not valid for " _ conditionClass)
-		set:$system.SQL.IsReservedWord(column) column = """" _ column _ """"
-		
-		set value = ##class(Form.Util.Converter).jsonToLogical(propertyClass, value)
-		
-		set sqlpredicate = ..TranslatePredicate(predicate)
-		if sqlpredicate="" {
-			return $$$ERROR($$$GeneralError,"Incorrect filter predicate")
+
+	Set condition = " WHERE "
+
+	For i=1:3:listLength {
+		Set:i'=1 condition = condition _ " AND "
+		Set column = $Listget(condList,i)
+		Set predicate = $Listget(condList,i+1)
+		Set value = $Translate($Listget(condList,i+2),$Char(9)," ") // replaces <TAB> in filter values eith whitespaces
+		Set value = $Translate(value,"'"";")
+
+		Set columnValid = ..ParseColumn(.column, conditionClass, .propertyClass)
+		Return:'columnValid $$$ERROR($$$GeneralError,"Filter column '" _column _ "' is not valid for " _ conditionClass)
+		Set:$System.SQL.IsReservedWord(column) column = """" _ column _ """"
+
+		Set value = ##class(Form.Util.Converter).jsonToLogical(propertyClass, value)
+
+		Set sqlpredicate = ..TranslatePredicate(predicate)
+		If sqlpredicate="" {
+			Return $$$ERROR($$$GeneralError,"Incorrect filter predicate")
 		}
-		
+
 		#define sq(%str) "'" _ %str _ "'"
-		if sqlpredicate = "IN" {
-			
-			set valTemp = "("
-			for j=1:1:$length(value, "~") {
-				set curVal = $piece(value, "~", j)
-				set curVal = $$$sq(curVal)
-				set:curVal="'$$$NULL'" curVal = "NULL"
-				set:((collation'="") && (curVal'="NULL")) curVal = collation _ "(" _ curVal _ ")"
+		If sqlpredicate = "IN" {
 
-				set valTemp = valTemp _ curVal
-				set:j'=$length(value, "~") valTemp = valTemp _ ", "
+			Set valTemp = "("
+			For j=1:1:$Length(value, "~") {
+				Set curVal = $Piece(value, "~", j)
+				Set curVal = $$$sq(curVal)
+				Set:curVal="'$$$NULL'" curVal = "NULL"
+				Set:((collation'="") && (curVal'="NULL")) curVal = collation _ "(" _ curVal _ ")"
+
+				Set valTemp = valTemp _ curVal
+				Set:j'=$Length(value, "~") valTemp = valTemp _ ", "
 			}
-			set value = valTemp _ ")"
-		} else {
-			set value = $$$sq(value)
-			set:value="'$$$NULL'" value = "NULL"
+			Set value = valTemp _ ")"
+		}
+    Else {
+			Set value = $$$sq(value)
+			Set:value="'$$$NULL'" value = "NULL"
 		}
 
-		if collation'="" {
-			set:((value'="NULL") && (sqlpredicate '="IN")) value = collation _ "(" _ value _ ")"
-			set column = collation _ "(" _ column _ ")"
+		If collation'="" {
+			Set:((value'="NULL") && (sqlpredicate '="IN")) value = collation _ "(" _ value _ ")"
+			Set column = collation _ "(" _ column _ ")"
 		}
-	
-		set condition = condition _ column _ " " _ sqlpredicate _ " " _ value
+
+		Set condition = condition _ column _ " " _ sqlpredicate _ " " _ value
 	}
-	return $$$OK
+	Return $$$OK
 }
 
 /// Is this column reference valid.
 /// <example>w ##class(Form.JSON.SQL).ParseColumn("company->addrerss_City", "Form.Test.Person", .c)</example>
 ClassMethod ParseColumn(ByRef column, conditionClass, Output finalPropertyClass) As %Boolean
 {
-	kill finalPropertyClass
-	set column = $replace(column, "_", "->") // Serial references
-	set columnOut = ""
-	
-	set length = $length(column,"->")
-	for j = 1:1:length {
+	Kill finalPropertyClass
+	Set column = $Replace(column, "_", "->") // Serial references
+	Set columnOut = ""
+
+	Set length = $Length(column,"->")
+	For j = 1:1:length {
 		// Determine current class context and property name
-		set currentClass = $case(j, 1:conditionClass, :##class(Form.Property).getPropertyType(currentClass, currentProperty)) // first piece - conditionClass, otherwise - previous class
-		set currentProperty = $piece(column,"->",j)
-		
-		// Last property may be an ID (which is not a %Dictionary.CompiledProperty cilumn, 
+		Set currentClass = $Case(j, 1:conditionClass, :##class(Form.Property).getPropertyType(currentClass, currentProperty)) // first piece - conditionClass, otherwise - previous class
+		Set currentProperty = $Piece(column,"->",j)
+
+		// Last property may be an ID (which is not a %Dictionary.CompiledProperty cilumn,
 		// so quit from the for cycle
-		if ((j=length) && ($zcvt(currentProperty, "U") = "ID")) {
-			set columnOut = columnOut _ "ID"
-			quit
+		If ((j=length) && ($ZConvert(currentProperty, "U") = "ID")) {
+			Set columnOut = columnOut _ "ID"
+			Quit
 		}
-		
+
 		// Property does not exist. Abort.
-		if '##class(%Dictionary.CompiledProperty).IDKEYExists(currentClass, currentProperty) {
-			return $$$NO
+		If '##class(%Dictionary.CompiledProperty).IDKEYExists(currentClass, currentProperty) {
+			Return $$$NO
 		}
-		
+
 		// Get property SQL name (usually equal to property name)
-		set currentPropertySQLName = ##class(Form.Property).getPropertySQLName(currentClass, currentProperty)
-		set:$system.SQL.IsReservedWord(currentPropertySQLName) currentPropertySQLName = """" _ currentPropertySQLName _ """"
-		
+		Set currentPropertySQLName = ##class(Form.Property).getPropertySQLName(currentClass, currentProperty)
+		Set:$System.SQL.IsReservedWord(currentPropertySQLName) currentPropertySQLName = """" _ currentPropertySQLName _ """"
+
 		// Append property SQL name to resulting sql expression
-		set columnOut = columnOut _ currentPropertySQLName
-		
+		Set columnOut = columnOut _ currentPropertySQLName
+
 		// Append _ or -> separator if this is not a last column
-		if j'=length {
-			set propertyType = ##class(Form.Property).getPropertyType(currentClass, currentProperty)
-			if $$$classIsSerial(propertyType) {
-				set separator = "_"
-			} else {
-				set separator = "->"
+		If j'=length {
+			Set propertyType = ##class(Form.Property).getPropertyType(currentClass, currentProperty)
+			If $$$classIsSerial(propertyType) {
+				Set separator = "_"
 			}
-			set columnOut = columnOut _ separator
+      Else {
+				Set separator = "->"
+			}
+			Set columnOut = columnOut _ separator
 		}
 	}
-	set finalPropertyClass = ##class(Form.Property).getPropertyType(currentClass, currentProperty)
-	set column = columnOut
-	
-	return $$$YES
+	Set finalPropertyClass = ##class(Form.Property).getPropertyType(currentClass, currentProperty)
+	Set column = columnOut
+
+	Return $$$YES
 }
 
 /// Translate predicate from js into sql
 ClassMethod TranslatePredicate(predicate = "") As %String
 {
-	q:predicate="" ""
-	q:predicate="neq" "!="
-	q:predicate="eq" "="
-	q:predicate="gte" ">="
-	q:predicate="gt" ">"
-	q:predicate="lte" "<="
-	q:predicate="lt" "<"
-	q:predicate="startswith" "%STARTSWITH"
-	q:predicate="contains" "["
-	q:predicate="doesnotcontain" "NOT["
-	q:predicate="in" "IN"
-	q:predicate="is" "IS"
-	q:predicate="isnot" "IS NOT"
-	q:predicate="like" "LIKE"
-	
-	q ""
+	Quit:predicate="" ""
+	Quit:predicate="neq" "!="
+	Quit:predicate="eq" "="
+	Quit:predicate="gte" ">="
+	Quit:predicate="gt" ">"
+	Quit:predicate="lte" "<="
+	Quit:predicate="lt" "<"
+	Quit:predicate="startswith" "%STARTSWITH"
+	Quit:predicate="contains" "["
+	Quit:predicate="doesnotcontain" "NOT["
+	Quit:predicate="in" "IN"
+	Quit:predicate="is" "IS"
+	Quit:predicate="isnot" "IS NOT"
+	Quit:predicate="like" "LIKE"
+
+	Quit ""
 }
 
 /// w ##class(Form.JSON.SQL).ParseOrderBy("Value desc", "Form.TestRef")
 ClassMethod ParseOrderBy(input, class, Output condition) As %Status
 {
 	#dim sc As %Status = $$$OK
-	kill condition
-	
+	Kill condition
+
 	// If input is an empty string use form FORMORDERBY parameter
-	set:input="" input = $parameter(class, $$$orderByParam)
-	set:input="" input = $parameter(class, $$$displayProp)
-	set condition = ""
-	return:input="" sc
-	
-	set descPos = $f(input, " desc")
-	if descPos'=0 {
-		set column = $e(input, 1, descPos-6) // 6 = $l("+desc")+1
-	} else {
-		set column=input
+	Set:input="" input = $Parameter(class, $$$orderByParam)
+	Set:input="" input = $Parameter(class, $$$displayProp)
+	Set condition = ""
+	Return:input="" sc
+
+	Set descPos = $Find(input, " desc")
+	If descPos'=0 {
+		Set column = $Extract(input, 1, descPos-6) // 6 = $Length("+desc")+1
 	}
-	
-	if ##class(%Dictionary.CompiledProperty).IDKEYExists(class, column) {
-		set column = ##class(Form.Property).getPropertySQLName(class, column)
-		set:$system.SQL.IsReservedWord(column) column = """" _ column _ """"
-	} elseif $isValidNum(column, 0, 1) {
+  Else {
+		Set column = input
+	}
+
+	If ##class(%Dictionary.CompiledProperty).IDKEYExists(class, column) {
+		Set column = ##class(Form.Property).getPropertySQLName(class, column)
+		Set:$System.SQL.IsReservedWord(column) column = """" _ column _ """"
+	}
+  ElseIf $Isvalidnum(column, 0, 1) {
 		/// nothing to do here
-	} else {
-		set sc = $$$ERROR($$$GeneralError, "Sorting column '" _ column _ "' does not exist")
-		set column = "" // invalidate SQL jic
 	}
-	
-	set condition = " ORDER BY " _ column _ $s(descPos'=0:" DESC",1:"")
-	return sc
+  Else {
+		Set sc = $$$ERROR($$$GeneralError, "Sorting column '" _ column _ "' does not exist")
+		Set column = "" // invalidate SQL jic
+	}
+
+	Set condition = " ORDER BY " _ column _ $Select(descPos'=0:" DESC",1:"")
+	Return sc
 }
 
 /// Draw JSON output.
@@ -231,7 +237,7 @@ Method %DrawJSON(nocount As %Boolean = {$$$NO}) As %Status [ Internal ]
 
 		Set tInfo = ##class(%ZEN.Auxiliary.QueryInfo).%New()
 		Merge tInfo.parms=tParms
-		
+
 		#Dim tRS As %Library.ResultSet
 		Set tRS = ..%CreateResultSet(.tSC,tInfo)
 		If $$$ISERR(tSC)||'$IsObject(tRS) {
@@ -242,7 +248,7 @@ Method %DrawJSON(nocount As %Boolean = {$$$NO}) As %Status [ Internal ]
 		Kill tColInfo
 		If tRS.%IsA("%Library.ResultSet") {
 			Set tCols = tRS.GetColumnCount()
-			For c = 1:1:tCols { 
+			For c = 1:1:tCols {
 				Set tColInfo(c,"name") = tRS.GetColumnHeader(c)
 				Set tColInfo(c,"type") = ##class(Form.Util.Converter).sqlTypeToClass(tRS.GetColumnType(c))
 			}
@@ -255,14 +261,13 @@ Method %DrawJSON(nocount As %Boolean = {$$$NO}) As %Status [ Internal ]
 		}
 		Set ..sql = tOrigSQL
 
- 		Set aet = {}.%FromJSON("{"""_..arrayName_""":[]}")
- 		
+		Write "{"
  		// FORMS - debug
- 		Set:$$$debug aet.sql = tOrigSQL
+		Write:$$$debug """sql"":"""_ tOrigSQL_""","
  		// END - FORMS - debug
- 		
- 		Set arrayNode = aet.%Get(..arrayName)
- 	
+
+		Write """"_..arrayName_""":["
+
  		// FORMS - pagination
 		Set tStartRow = ..pageSize * (..currPage - 1)
 		Set tEndRow = tStartRow + ..pageSize
@@ -271,38 +276,37 @@ Method %DrawJSON(nocount As %Boolean = {$$$NO}) As %Status [ Internal ]
 		// fetch and emit JSON
 		// n.b. this should be pushed into the result set itself
 		Set tRow = 0
+		Set rows = ""
+			// The last condition - FORMS - pagination
 		While (tRS.%Next(.tSC) && ((..maxRows = 0) || (tRow < ..maxRows)) && (tRow < tEndRow)) { // Последнее условие - FORMS - пагинация
 			Quit:$$$ISERR(tSC)
 			Set tRow = tRow + 1
-			
+
 			// FORMS - pagination
-			CONTINUE:(tRow<=tStartRow)
+			Continue:(tRow<=tStartRow)
 			// END - FORMS - pagination
-			
-			Set node = {}
+
+			Set node = ""
 			For c = 1:1:tCols {
 				Set tVal = tRS.%GetData(c)
+				Set tColName = $Get(tColInfo(c,"name"))
 				Set tOutVal = ##class(Form.Util.Converter).logicalToJSON($Get(tColInfo(c,"type")), tVal)
-				Do node.%Set($Get(tColInfo(c,"name")), tOutVal)
-				
-				/*If ($IsValidNum(tVal)) {
-					Do node.$set($Get(tColInfo(c,"name")),$Num(tVal),"number")
-				}
-				Else {
-					Do node.$set($Get(tColInfo(c,"name")),tVal)
-				}*/
+				// to surround no numbers values and Id by quotes
+				Set:(($Isvalidnum(tOutVal)=$$$NO)||($ZConvert(tColName,"l")="id")||($ZConvert(tColName,"l")="_id")) tOutVal = $Char(34)_tOutVal_$Char(34)
+				Set $List(node,*+1) = """"_tColName_""":"_tOutVal
 			}
-			Do arrayNode.%Push(node)
+			Set:(node'="") $List(rows, *+1) = "{"_$ListToString(node,",")_"}"
 		}
-		
+		Write $ListToString(rows,",")_"]"
+
 		// FORMS - results count
 		If nocount = $$$NO {
 			While tRS.%Next() {}
-			Set aet.total=tRS.%ROWCOUNT
+			Write ",""total"":"_ tRS.%ROWCOUNT
 		}
 		// END - FORMS - results count
-				
-		Write aet.%ToJSON()
+
+		Write "}"
 	}
 	Catch(ex) {
 		Set tSC = ex.AsStatus()

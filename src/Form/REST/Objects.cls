@@ -20,18 +20,18 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 ClassMethod getFormObjects(class As %String = "", queryType As %String) As %Status
 {
 	#dim sc As %Status = $$$OK
-	set sc = ##class(Form.Info).formExistsStatus(class)
-	return:$$$ISERR(sc) sc
-	set sc = ..checkObjPermission(class, "R")
-	return:$$$ISERR(sc) sc
-	set sc = ..getBaseQuery(queryType, class, .queryBase)
-	return:$$$ISERR(sc) sc	
-	
-	set table = ##class(%CSP.UI.Portal.SQL.Home).Quoter2($$$ClassSQLTable(class))
-	set sql = queryBase _ table
-	
-	set sc = ##class(Form.JSON.SQL).WriteJSONFromSQL(sql, class)
-	return sc
+	Set sc = ##class(Form.Info).formExistsStatus(class)
+	Return:$$$ISERR(sc) sc
+	Set sc = ..checkObjPermission(class, "R")
+	Return:$$$ISERR(sc) sc
+	Set sc = ..getBaseQuery(queryType, class, .queryBase)
+	Return:$$$ISERR(sc) sc
+
+	Set table = ##class(%CSP.UI.Portal.SQL.Home).Quoter2($$$ClassSQLTable(class))
+	Set sql = queryBase _ table
+
+	Set sc = ##class(Form.JSON.SQL).WriteJSONFromSQL(sql, class)
+	Return sc
 }
 
 /// Returns the part between SELECT and FORM (queryBase) based on queryType and target class
@@ -40,78 +40,86 @@ ClassMethod getFormObjects(class As %String = "", queryType As %String) As %Stat
 /// 2. ClassMethods, defined in this class with the name: queryQUERYTYPE
 ClassMethod getBaseQuery(queryType As %String, class As %String, Output queryBase As %String) As %Status
 {
-	set queryBase = ""
-	set queryType = $ZCVT(queryType, "U")
-	set userQueryClass = ##class(Form.Settings).getSetting("queryclass")
+	Set queryBase = ""
+	Set queryType = $ZConvert(queryType, "U")
+	Set userQueryClass = ##class(Form.Settings).getSetting("queryclass")
 	#dim sc As %Status = $$$OK
-	if ##class(%Dictionary.CompiledMethod).IDKEYExists(class, "query" _ queryType) {
-		set queryBase = $classmethod(class, "query" _ queryType)
-	} elseif ((userQueryClass'="") && (##class(%Dictionary.CompiledParameter).IDKEYExists(userQueryClass, queryType))) {
-		set queryBase = $parameter(userQueryClass, queryType)
-	} elseif ((userQueryClass'="") && (##class(%Dictionary.CompiledMethod).IDKEYExists(userQueryClass, "query" _ queryType))) {
-		set queryBase = $classmethod(userQueryClass, "query" _ queryType, class)
-	} elseif ##class(%Dictionary.CompiledParameter).IDKEYExists($classname(), queryType) {
-		set queryBase = $parameter(, queryType)
-	} elseif ##class(%Dictionary.CompiledMethod).IDKEYExists($classname(), "query" _ queryType) {
-		set queryBase = $classmethod(, "query" _ queryType, class)
-	} elseif 0 {
+	If ##class(%Dictionary.CompiledMethod).IDKEYExists(class, "query" _ queryType) {
+		Set queryBase = $Classmethod(class, "query" _ queryType)
+	}
+  elseif ((userQueryClass'="") && (##class(%Dictionary.CompiledParameter).IDKEYExists(userQueryClass, queryType))) {
+		Set queryBase = $Parameter(userQueryClass, queryType)
+	}
+  elseif ((userQueryClass'="") && (##class(%Dictionary.CompiledMethod).IDKEYExists(userQueryClass, "query" _ queryType))) {
+		Set queryBase = $Classmethod(userQueryClass, "query" _ queryType, class)
+	}
+  elseif ##class(%Dictionary.CompiledParameter).IDKEYExists($Classname(), queryType) {
+		Set queryBase = $Parameter(, queryType)
+	}
+  elseif ##class(%Dictionary.CompiledMethod).IDKEYExists($Classname(), "query" _ queryType) {
+		Set queryBase = $Classmethod(, "query" _ queryType, class)
+	}
+  elseif 0 {
 		/// TODO Some other type of "get stuff between SELECT and FROM"
-	} else {
-		set sc = $$$ERROR($$$GeneralError, "Query type " _ queryType _ " not found")		
 	}
-	
-	if (queryBase'="") {
-		set queryBase = "SELECT " _ queryBase _ " FROM "
+  else {
+		Set sc = $$$ERROR($$$GeneralError, "Query type " _ queryType _ " not found")
 	}
-	
-	return sc
+
+	If (queryBase'="") {
+		Set queryBase = "SELECT " _ queryBase _ " FROM "
+	}
+
+	Return sc
 }
 
 /// Return id and dislpayName
 /// <example>w ##class(Form.REST.Objects).queryINFO("Form.Test.Simple")</example>
 ClassMethod queryINFO(class As %String) As %String
 {
-	set method = "getObjectDisplayName"
-	
-	if ##class(%Dictionary.CompiledMethod).IDKEYExists(class, method) {
-		set sqlProc = $$$ClassSQLTable(class) _ "_" _ method _ "(id)"
-	} else {
-		set sqlProc = $parameter(class, $$$displayProp)
+	Set method = "getObjectDisplayName"
+
+	If ##class(%Dictionary.CompiledMethod).IDKEYExists(class, method) {
+		Set sqlProc = $$$ClassSQLTable(class) _ "_" _ method _ "(id)"
 	}
-	
-	set queryBase = "id AS _id, " _ sqlProc _ " As displayName"
-	return queryBase
+  else {
+		Set sqlProc = $Parameter(class, $$$displayProp)
+	}
+
+	Set queryBase = "id AS _id, " _ sqlProc _ " As displayName"
+	Return queryBase
 }
 
 /// Return id, dislpayName and class
 /// <example>w ##class(Form.REST.Objects).queryINFOCLASS("Form.Test.Simple")</example>
 ClassMethod queryINFOCLASS(class As %String) As %String
 {
-	set queryBase = ..queryINFO(class) _ ", %CLASSNAME AS _class "
-	return queryBase
+	Set queryBase = ..queryINFO(class) _ ", %CLASSNAME AS _class "
+	Return queryBase
 }
 
 /// Get form objects by a custom query
 ClassMethod getFormObjectsCustom(class As %String = "", queryType As %String) As %Status
 {
 	#dim sc As %Status = $$$OK
-	set sc = ##class(Form.Info).formExistsStatus(class)
-	return:$$$ISERR(sc) sc
-	set sc = ..checkObjPermission(class, "R")
-	return:$$$ISERR(sc) sc
-	
-	set queryType = $ZCVT(queryType, "U")
-		
-	if ##class(%Dictionary.CompiledMethod).IDKEYExists(class, "customquery" _ queryType) {
-		set sql = $classmethod(class, "customquery" _ queryType)
-	} else {
-		set sc = $$$ERROR($$$GeneralError, "Custom query type " _ queryType _ " not found")
+	Set sc = ##class(Form.Info).formExistsStatus(class)
+	Return:$$$ISERR(sc) sc
+	Set sc = ..checkObjPermission(class, "R")
+	Return:$$$ISERR(sc) sc
+
+	Set queryType = $ZConvert(queryType, "U")
+
+	If ##class(%Dictionary.CompiledMethod).IDKEYExists(class, "customquery" _ queryType) {
+		Set sql = $Classmethod(class, "customquery" _ queryType)
 	}
-	
-	return:$$$ISERR(sc) sc	
-	
-	set sc = ##class(Form.JSON.SQL).WriteJSONFromSQL(sql)
-	return sc
+  else {
+		Set sc = $$$ERROR($$$GeneralError, "Custom query type " _ queryType _ " not found")
+	}
+
+	Return:$$$ISERR(sc) sc
+
+	Set sc = ##class(Form.JSON.SQL).WriteJSONFromSQL(sql)
+	Return sc
 }
 
 }
