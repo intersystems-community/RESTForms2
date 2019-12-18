@@ -8,6 +8,16 @@ This is a development version.
 1. Clone repo
 2. Build development image: `docker-compose build`
 3. Run container: `docker-compose up -d`
+4. Run all tests
+```
+  set ^UnitTestRoot = "/app/src/UnitTests"
+  do ##class(%UnitTest.Manager).RunTest("", "/nodelete")
+```
+5. Run specific test
+```
+  set ^UnitTestRoot = "/app/src/UnitTests"
+  do ##class(%UnitTest.Manager).RunTest(":UnitTests.PartialUpdates", "/nodelete")
+```
 
 # Installation
 
