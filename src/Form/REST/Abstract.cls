@@ -10,6 +10,8 @@ Parameter CHARSET = "UTF-8";
 
 Parameter UseSession As Integer = 1;
 
+Parameter CONVERTINPUTSTREAM = 1;
+
 /// This method takes a status, renders it as json (if requested) and outputs the result
 ClassMethod outputStatus(pSC As %Status) As %Status [ Internal ]
 {
@@ -90,17 +92,6 @@ ClassMethod OnPreDispatch(pUrl As %String, pMethod As %String, ByRef pContinue A
 /// Конвертируем %request.Content в UTF8 и в объект класса %ZEN.proxyObject
 ClassMethod convertRequestBody() As %Status
 {
-	#dim %request As %CSP.Request
-	
-	return:'$isObject(%request.Content) $$$OK // нет тела запроса
-	return:'$$$classIsStream($className(%request.Content)) $$$OK // уже сконвертировали
-	set content = %request.Content.Read($$$MaxStringLength)
-	set content = $ZCVT(content,"I","UTF8") 
-	
-	set contentStream = ##class(%CSP.BinaryStream).%New()
-	do contentStream.Write(content)
-	set %request.Content = contentStream
-	
 	return $$$OK
 }
 
