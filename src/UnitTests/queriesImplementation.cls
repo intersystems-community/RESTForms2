@@ -21,13 +21,13 @@ Method TestAll()
   Set data = resp.Data.Read()
 
   // Remove Timestamp
-  For k=1:1:2 {
-    Set pos = $Find(data,"""ts"":", $Get(pos))+1
-    Set tms = $Extract(data, pos, pos+11)
-    Set data = $Replace(data, tms, "")
+  set dataObj = {}.%FromJSON(data)
+  set total = dataObj.%Get("total")
+  for i=0:1:(total-1) {
+    do dataObj.%Get("children").%Get(i).%Set("ts", "")
   }
 
-  Do $$$AssertEquals(data, result)
+  Do $$$AssertEquals(dataObj.%ToJSON(), result)
 }
 
 Method TestInfo()

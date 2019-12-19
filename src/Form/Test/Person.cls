@@ -11,6 +11,15 @@ Parameter DISPLAYPROPERTY As %String = "name";
 
 Parameter FORMORDERBY As %String = "dob";
 
+/// %JSON.Adaptor mapping used during CREATE
+Parameter FORMCREATEMAPPING As %String;
+
+/// %JSON.Adaptor mapping used during READ (export to JSON)
+Parameter FORMREADMAPPING As %String;
+
+/// %JSON.Adaptor mapping used during UPDATE
+Parameter FORMUPDATEMAPPING As %String;
+
 /// Person's name.
 /// Use only first 250 symbols for comparison.
 /// Required for all long properties used by "order by"
@@ -48,13 +57,44 @@ $Select(date="":"",1:($ZDate($Horolog,8)-$ZDate(date,8)\10000))
 
 /// Person's spouse.
 /// This is a reference to another persistent object.
-Property relative As Form.Test.Person(%JSONREFERENCE = "ID", DISPLAYNAME = "Relative");
+Property relative As Form.Test.Person(%JSONINCLUDE = "INOUT", %JSONREFERENCE = "ID", DISPLAYNAME = "Relative");
 
 /// Person's home address. This uses an embedded object.
 Property Home As Form.Test.Address(DISPLAYNAME = "House");
 
 /// The company this person works for.
-Relationship company As Form.Test.Company(%JSONREFERENCE = "ID", DISPLAYNAME = "Company") [ Cardinality = one, Inverse = employees ];
+Relationship company As Form.Test.Company(%JSONINCLUDE = "INOUT", %JSONREFERENCE = "ID", DISPLAYNAME = "Company") [ Cardinality = one, Inverse = employees ];
+
+XData CreateMapping
+{
+<Mapping xmlns="http://www.intersystems.com/jsonmapping">
+	<Property Name="name" FieldName="fullName"/>
+  <Property Name="dob"/>
+  <Property Name="num"/>
+  <Property Name="company" Include="INOUT" Reference="OID"/>
+</Mapping>
+}
+
+XData ReadMapping
+{
+<Mapping xmlns="http://www.intersystems.com/jsonmapping">
+	<Property Name="name"/>
+  <Property Name="dob" FieldName="dateOfBirth"/>
+  <Property Name="num"/>
+  <Property Name="relative"/>
+  <Property Name="company" Include="INOUT" Reference="OID"/>
+</Mapping>
+}
+
+XData UpdateMapping
+{
+<Mapping xmlns="http://www.intersystems.com/jsonmapping">
+	<Property Name="name" FieldName="fullName"/>
+  <Property Name="dob"/>
+  <Property Name="num"/>
+  <Property Name="company" Include="INOUT" Reference="ID"/>
+</Mapping>
+}
 
 /// Property amount As %Double(DISPLAYNAME = "double", POPSPEC = "Float(0,100,2)");
 Storage Default
@@ -92,6 +132,15 @@ Storage Default
 </Value>
 <Value name="11">
 <Value>num</Value>
+</Value>
+<Value name="12">
+<Value>FORMCREATEMAPPING</Value>
+</Value>
+<Value name="13">
+<Value>FORMREADMAPPING</Value>
+</Value>
+<Value name="14">
+<Value>FORMUPDATEMAPPING</Value>
 </Value>
 </Data>
 <DataLocation>^Form.Test.PersonD</DataLocation>

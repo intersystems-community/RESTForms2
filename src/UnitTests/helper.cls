@@ -48,6 +48,21 @@ ClassMethod Get(location As %String, Output response As %Net.HttpResponse) As %S
   Quit tSC
 }
 
+ClassMethod Post(location As %String, body As %DynamicObject, Output response As %Net.HttpResponse) As %Status
+{
+  Set tSC = $$$OK
+  Try {
+    Set server = ..GetServer()
+    Set json = body.%ToJSON()
+    Do server.EntityBody.Write(json)
+    $$$THROWONERROR(tSC, server.Post(..#APLICATION _ location))
+    Set response = server.HttpResponse
+  } Catch tErr {
+		Set tSC = tErr.AsStatus()
+  }
+  Quit tSC
+}
+
 ClassMethod Put(location As %String, body As %DynamicObject, Output response As %Net.HttpResponse) As %Status
 {
   Set tSC = $$$OK
@@ -56,6 +71,19 @@ ClassMethod Put(location As %String, body As %DynamicObject, Output response As 
     Set json = body.%ToJSON()
     Do server.EntityBody.Write(json)
     $$$THROWONERROR(tSC, server.Put(..#APLICATION _ location))
+    Set response = server.HttpResponse
+  } Catch tErr {
+		Set tSC = tErr.AsStatus()
+  }
+  Quit tSC
+}
+
+ClassMethod Delete(location As %String, Output response As %Net.HttpResponse) As %Status
+{
+  Set tSC = $$$OK
+  Try {
+    Set server = ..GetServer()
+    $$$THROWONERROR(tSC, server.Delete(..#APLICATION _ location))
     Set response = server.HttpResponse
   } Catch tErr {
 		Set tSC = tErr.AsStatus()

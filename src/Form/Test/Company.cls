@@ -14,7 +14,7 @@ Parameter DISPLAYPROPERTY As %String = "name";
 Property name As %String(DISPLAYNAME = "Name", POPSPEC = "Company()");
 
 /// The <class>Person</class> objects associated with this <class>Company</class>.
-Relationship employees As Form.Test.Person(DISPLAYNAME = "Employees") [ Cardinality = many, Inverse = company ];
+Relationship employees As Form.Test.Person(%JSONREFERENCE = "ID", DISPLAYNAME = "Employees") [ Cardinality = many, Inverse = company ];
 
 Storage Default
 {
