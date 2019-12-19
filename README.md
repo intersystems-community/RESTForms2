@@ -6,8 +6,26 @@ RESTForms is a generalized REST API backend for web applications built on InterS
 This is a development version.
 
 1. Clone repo
-2. Build development image: `docker-compose build`
-3. Run container: `docker-compose up -d`
+2. Build development image: `$ docker-compose build`
+3. Run container: `$ docker-compose up -d`
+3. Open an interactive session
+```
+  $ docker exec -it restforms2 bash
+  $ iris session IRIS
+```
+4. Run all tests
+```
+  zn "restforms2"
+  set ^UnitTestRoot = "/app/src/UnitTests"
+  do ##class(%UnitTest.Manager).RunTest("", "/nodelete")
+```
+  or run a specific test case
+```
+  zn "restforms2"
+  set ^UnitTestRoot = "/app/src/UnitTests"
+  do ##class(%UnitTest.Manager).RunTest(":UnitTests.ObjectCRUD", "/nodelete")
+```
+5. Check [UnitTest Report](http://localhost:52773/csp/restforms2/%25UnitTest.Portal.Home.zen?$NAMESPACE=RESTFORMS2) 
 
 # Installation
 
