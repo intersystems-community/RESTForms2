@@ -34,58 +34,40 @@ Parameter FORMUPDATEMAPPING As %String;
 /// Create an object from JSON
 ClassMethod createFromJSON(jsonInput, Output obj) As %Status
 {
-	set ret = $$$OK
-	try {
-		set obj = ..%New()
-		$$$ThrowOnError(obj.%JSONImport(jsonInput, $parameter(obj,"FORMCREATEMAPPING")))
-		$$$ThrowOnError(obj.%Save())
-
-	} catch ex {
-		set ret = ex.AsStatus()
-	}
-	quit ret
+	set sc = $$$OK
+	set obj = ..%New()
+	$$$QuitOnError(obj.%JSONImport(jsonInput, $parameter(obj,"FORMCREATEMAPPING")))
+	$$$QuitOnError(obj.%Save())
+	quit sc
 }
 
 /// Read object and export to JSON
 ClassMethod toJSON(id As %Integer = "") As %Status
 {
-	set ret = $$$OK
-	try {
-		set obj = ..%OpenId(id,,.sc)
-		$$$ThrowOnError(sc)
-		$$$ThrowOnError(obj.%JSONExport($parameter(obj,"FORMREADMAPPING")))
-	} catch ex {
-		set ret = ex.AsStatus()
-	}
-	quit ret
+	set sc = $$$OK
+	set obj = ..%OpenId(id,,.sc)
+	$$$QuitOnError(sc)
+	$$$QuitOnError(obj.%JSONExport($parameter(obj,"FORMREADMAPPING")))
+	quit sc
 }
 
 /// Update object from JSON
 ClassMethod updateFromJSON(id As %String, jsonInput, Output obj) As %Status
 {
-	set ret = $$$OK
-	try {
-		set obj = ..%OpenId(id,,.sc)
-		$$$ThrowOnError(sc)
-		$$$ThrowOnError(obj.%JSONImport(jsonInput, $parameter(obj,"FORMUPDATEMAPPING")))
-		$$$ThrowOnError(obj.%Save())
-
-	} catch ex {
-		set ret = ex.AsStatus()
-	}
-	quit ret
+	set sc = $$$OK
+	set obj = ..%OpenId(id,,.sc)
+	$$$QuitOnError(sc)
+	$$$QuitOnError(obj.%JSONImport(jsonInput, $parameter(obj,"FORMUPDATEMAPPING")))
+	$$$QuitOnError(obj.%Save())
+	quit sc
 }
 
 /// Delete object
 ClassMethod deleteObject(id) As %Status
 {
-	set ret = $$$OK
-	try {
-		$$$ThrowOnError(..%DeleteId(id))
-	} catch ex {
-		set ret = ex.AsStatus()
-	}
-	quit ret
+	set sc = $$$OK
+	$$$QuitOnError(..%DeleteId(id))
+	quit sc
 }
 
 /// Get basic information about one object

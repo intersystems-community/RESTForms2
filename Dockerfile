@@ -18,13 +18,12 @@ WORKDIR /opt/restforms2
 
 USER irisowner
 COPY src src
-COPY Installer.cls .
 SHELL ["/irissession.sh"]
 
 # run installer
 RUN \
-  do $SYSTEM.OBJ.Load("/opt/restforms2/Installer.cls", "ck") \
-  set sc = ##class(App.Installer).Run() 
+  do $SYSTEM.OBJ.Load("/opt/restforms2/src/Form/Installer.cls", "ck") \
+  set sc = ##class(Form.Installer).Run() 
 
 # bringing the standard shell back
 SHELL ["/bin/bash", "-c"]

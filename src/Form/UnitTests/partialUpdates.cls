@@ -1,4 +1,4 @@
-Class UnitTests.PartialUpdates Extends %UnitTest.TestCase
+Class Form.UnitTests.PartialUpdates Extends %UnitTest.TestCase
 {
 
 Method OnAfterAllTests() As %Status
@@ -9,7 +9,7 @@ Method OnAfterAllTests() As %Status
 
 ClassMethod CreatePerson(Output id As %String = "", name As %String, dob As %Date = "", num As %Integer = "") As %Status
 {
-  Quit ##class(UnitTests.Factory).CreatePerson(.id, name, dob, num)
+  Quit ##class(Form.UnitTests.Factory).CreatePerson(.id, name, dob, num)
 }
 
 ClassMethod FindPerson(id As %String) As %SQL.StatementResult
@@ -32,7 +32,7 @@ Method TestChangeOneProperty()
   Set json = {}
   Set json.num = 42
 
-  Do $$$AssertStatusOK(##class(UnitTests.helper).Put("/form/object/Form.Test.Person/"_id, json, .resp))
+  Do $$$AssertStatusOK(##class(Form.UnitTests.helper).Put("/form/object/Form.Test.Person/"_id, json, .resp))
   Do $$$AssertEquals(resp.StatusCode, 200)
 
   Set result = ..FindPerson(id)
@@ -52,7 +52,7 @@ Method TestChangeReferenceProperty()
   Set json = {}
   Set json.relative = relative
 
-  Do $$$AssertStatusOK(##class(UnitTests.helper).Put("/form/object/Form.Test.Person/"_id, json, .resp))
+  Do $$$AssertStatusOK(##class(Form.UnitTests.helper).Put("/form/object/Form.Test.Person/"_id, json, .resp))
   Do $$$AssertEquals(resp.StatusCode, 200)
 
   Set result = ..FindPerson(id)
@@ -71,7 +71,7 @@ Method TestChangeSerialProperty()
   Set json.Home.House = 90
   Set json.Home.Street = street
 
-  Do $$$AssertStatusOK(##class(UnitTests.helper).Put("/form/object/Form.Test.Person/"_id, json, .resp))
+  Do $$$AssertStatusOK(##class(Form.UnitTests.helper).Put("/form/object/Form.Test.Person/"_id, json, .resp))
   Do $$$AssertEquals(resp.StatusCode, 200)
 
   Set result = ..FindPerson(id)

@@ -57,31 +57,22 @@ ClassMethod getFormObjectProperty(class As %String = "", id As %Integer = "", pr
 /// Возвращает {"Id": "Значение Id"} при успехе
 ClassMethod createFormObject(class As %String) As %Status
 {
-	set ret = $$$OK
-	try {
-		$$$ThrowOnError(##class(Form.Info).formExistsStatus(class))
-		$$$ThrowOnError(..checkObjPermission(class, "C"))
+	set sc = $$$OK
+	$$$QuitOnError(##class(Form.Info).formExistsStatus(class))
+	$$$QuitOnError(..checkObjPermission(class, "C"))
 
-		$$$ThrowOnError($classmethod(class, "createFromJSON", %request.Content, .obj))
-		write "{""Id"": """ _ obj.%Id() _ """}" 
-			
-	} catch ex {
-		set ret = ex.AsStatus()
-	} 
-	return ret
+	$$$QuitOnError($classmethod(class, "createFromJSON", %request.Content, .obj))
+	write "{""Id"": """ _ obj.%Id() _ """}" 
+	return sc
 }
 
 /// Обновление объекта id для формы form (берём из %request.Content)
 ClassMethod updateFormDynamicObject(class As %String, id As %Integer = "") As %Status
 {
-	set ret = $$$OK
-	try {
-		$$$ThrowOnError(..checkObjPermission(class, "U"))
-		$$$ThrowOnError($classmethod(class, "updateFromJSON", id, %request.Content, .obj))
-	} catch ex {
-		set ret = ex.AsStatus()
-	} 
-	return ret
+	set sc = $$$OK
+	$$$QuitOnError(..checkObjPermission(class, "U"))
+	$$$QuitOnError($classmethod(class, "updateFromJSON", id, %request.Content, .obj))
+	return sc
 }
 
 /// Удаление объекта id для формы form

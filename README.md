@@ -16,14 +16,14 @@ This is a development version.
 4. Run all tests
 ```
   zn "restforms2"
-  set ^UnitTestRoot = "/app/src/UnitTests"
+  set ^UnitTestRoot = "/app/src/Form/UnitTests"
   do ##class(%UnitTest.Manager).RunTest("", "/nodelete")
 ```
   or run a specific test case
 ```
   zn "restforms2"
-  set ^UnitTestRoot = "/app/src/UnitTests"
-  do ##class(%UnitTest.Manager).RunTest(":UnitTests.ObjectCRUD", "/nodelete")
+  set ^UnitTestRoot = "/app/src/Form/UnitTests"
+  do ##class(%UnitTest.Manager).RunTest(":Form.UnitTests.ObjectCRUD", "/nodelete")
 ```
 5. Check [UnitTest Report](http://localhost:52773/csp/restforms2/%25UnitTest.Portal.Home.zen?$NAMESPACE=RESTFORMS2) 
 

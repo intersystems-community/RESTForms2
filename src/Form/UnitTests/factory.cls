@@ -1,5 +1,5 @@
 /// Factory to create Data
-Class UnitTests.Factory
+Class Form.UnitTests.Factory
 {
 
 ClassMethod CreatePerson(Output id As %String = "", name As %String, dob As %Date = "", num As %Integer = "") As %Status

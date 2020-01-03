@@ -1,4 +1,4 @@
-Class App.Installer
+Class Form.Installer
 {
 
 Parameter Namespace = "RESTFORMS2";

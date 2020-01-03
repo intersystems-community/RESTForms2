@@ -1,5 +1,5 @@
 /// Helper to create HttpRequest
-Class UnitTests.helper
+Class Form.UnitTests.helper
 {
 
 /// Your WebApplication Name

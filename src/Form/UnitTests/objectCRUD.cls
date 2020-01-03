@@ -1,6 +1,6 @@
 /// 
 /// TestCase for Object CRUD operations
-Class UnitTests.ObjectCRUD Extends %UnitTest.TestCase
+Class Form.UnitTests.ObjectCRUD Extends %UnitTest.TestCase
 {
 
 /// Delete test data after all tests
@@ -38,7 +38,7 @@ Method TestCreate()
   // -- use default JSON mapping defined in class, FORMCREATEMAPPING=""
   // create company
   set companyReq = { "name": "Dallas Mavericks" }
-  do $$$AssertStatusOK(##class(UnitTests.helper).Post("/form/object/Form.Test.Company", companyReq, .resp))
+  do $$$AssertStatusOK(##class(Form.UnitTests.helper).Post("/form/object/Form.Test.Company", companyReq, .resp))
   do $$$AssertEquals(resp.StatusCode, 200)
   set companyRsp = {}.%FromJSON(resp.Data.Read())
   set company = ##class(Form.Test.Company).%OpenId(companyRsp.%Get("Id"))
@@ -47,7 +47,7 @@ Method TestCreate()
   
   // create person
   set personReq = {"name":"Luka Dončić","dob":"1999-02-28","num":77,"company":(company.%Id())} 
-  do $$$AssertStatusOK(##class(UnitTests.helper).Post("/form/object/Form.Test.Person", personReq, .resp))
+  do $$$AssertStatusOK(##class(Form.UnitTests.helper).Post("/form/object/Form.Test.Person", personReq, .resp))
   do $$$AssertEquals(resp.StatusCode, 200)
   set personRsp = {}.%FromJSON(resp.Data.Read())
   set person = ##class(Form.Test.Person).%OpenId(personRsp.%Get("Id"))
@@ -64,7 +64,7 @@ Method TestCreate()
   do $$$AssertStatusOK($system.OBJ.Compile("Form.Test.Person"))
   // create person
   set personReq = {"fullName":"Kristaps Porziņģis","dob":"1995-08-02","num":6,"company":("Form.Test.Company,"_company.%Id())} 
-  do $$$AssertStatusOK(##class(UnitTests.helper).Post("/form/object/Form.Test.Person", personReq, .resp))
+  do $$$AssertStatusOK(##class(Form.UnitTests.helper).Post("/form/object/Form.Test.Person", personReq, .resp))
   do $$$AssertEquals(resp.StatusCode, 200)
   set personRsp = {}.%FromJSON(resp.Data.Read())
   set person = ##class(Form.Test.Person).%OpenId(personRsp.%Get("Id"))
@@ -96,7 +96,7 @@ Method TestRead()
   do $$$AssertStatusOK(person.%Save())
 
   // -- use default JSON mapping defined in class, FORMREADMAPPING=""
-  do $$$AssertStatusOK(##class(UnitTests.helper).Get("/form/object/Form.Test.Person/"_person.%Id(), .resp))
+  do $$$AssertStatusOK(##class(Form.UnitTests.helper).Get("/form/object/Form.Test.Person/"_person.%Id(), .resp))
   do $$$AssertEquals(resp.StatusCode, 200)
   set data = resp.Data.Read()
   set expected = {"name":"James Harden","dob":"1989-08-26","ts":"2019-12-18T17:35:01Z","num":13,"аge":(##class(Form.Test.Person).currentAge(person.dob)),"company":(company.%Id())}
@@ -107,7 +107,7 @@ Method TestRead()
   set param.Default = "ReadMapping"
   do $$$AssertStatusOK(param.%Save())
   do $$$AssertStatusOK($system.OBJ.Compile("Form.Test.Person"))
-  do $$$AssertStatusOK(##class(UnitTests.helper).Get("/form/object/Form.Test.Person/"_person.%Id(), .resp))
+  do $$$AssertStatusOK(##class(Form.UnitTests.helper).Get("/form/object/Form.Test.Person/"_person.%Id(), .resp))
   do $$$AssertEquals(resp.StatusCode, 200)
   set data = resp.Data.Read()
   set expected = {"name":"James Harden","dateOfBirth":"1989-08-26","num":13,"company":("Form.Test.Company,"_company.%Id())}
@@ -133,7 +133,7 @@ Method TestUpdate()
   do $$$AssertStatusOK(person.%Save())
   // update person
   set personReq = {"name":"Alex Caruso (Bald Mamba)","dob":"1994-02-28","num":3,"company":(company.%Id())} 
-  do $$$AssertStatusOK(##class(UnitTests.helper).Put("/form/object/Form.Test.Person/"_person.%Id(), personReq, .resp))
+  do $$$AssertStatusOK(##class(Form.UnitTests.helper).Put("/form/object/Form.Test.Person/"_person.%Id(), personReq, .resp))
   do $$$AssertEquals(resp.StatusCode, 200)
   do $$$AssertStatusOK(person.%Reload())
   do $$$AssertEquals(person.name, personReq.%Get("name"))
@@ -155,7 +155,7 @@ Method TestUpdate()
   do $$$AssertStatusOK(person.%Save())
   // update person
   set personReq = {"fullName":"Anthony Davis (The Brow)","dob":"1993-03-11","num":3,"company":(company.%Id())} 
-  do $$$AssertStatusOK(##class(UnitTests.helper).Put("/form/object/Form.Test.Person/"_person.%Id(), personReq, .resp))
+  do $$$AssertStatusOK(##class(Form.UnitTests.helper).Put("/form/object/Form.Test.Person/"_person.%Id(), personReq, .resp))
   do $$$AssertEquals(resp.StatusCode, 200)
   do $$$AssertStatusOK(person.%Reload())
   do $$$AssertEquals(person.name, personReq.%Get("fullName"))
@@ -177,7 +177,7 @@ Method TestDelete()
   do $$$AssertStatusOK(person.%Save())
 
   // delete person
-  do $$$AssertStatusOK(##class(UnitTests.helper).Delete("/form/object/Form.Test.Person/"_person.%Id(), .resp))
+  do $$$AssertStatusOK(##class(Form.UnitTests.helper).Delete("/form/object/Form.Test.Person/"_person.%Id(), .resp))
   do $$$AssertEquals(resp.StatusCode, 200)
   do $$$AssertEquals(##class(Form.Test.Person).%ExistsId(person.%Id()), 0)
 }
