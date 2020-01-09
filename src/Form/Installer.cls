@@ -1,20 +1,43 @@
 Class Form.Installer
 {
 
+Parameter SourcePath = "/opt/restforms2/src/";
+
 Parameter Namespace = "RESTFORMS2";
+
+Parameter CreateNamespace = "yes";
+
+Parameter DataDBPath = "/opt/restforms2/db/DATA";
+
+Parameter CodeDBPath = "/opt/restforms2/db/APP";
+
+Parameter CreateWebApp = "yes";
+
+Parameter WebApp = "/forms";
+
+Parameter EnableUnitTestPortal = "yes";
 
 XData Install
 {
 <Manifest>
-    <Log Text="Creating namespace ${Namespace}" Level="0"/> 
-    <Namespace Name="${Namespace}" Create="yes" Code="${Namespace}-APP" Ensemble="" Data="${Namespace}-DATA"> 
-        <Configuration> 
-            <Database Name="${Namespace}-DATA" Dir="/opt/restforms2/db/DATA" Create="yes" MountRequired="true" Resource="%DB_DEFAULT" PublicPermissions="RW" MountAtStartup="true"/> 
-            <Database Name="${Namespace}-APP" Dir="/opt/restforms2/db/APP" Create="yes" MountRequired="true" Resource="%DB_DEFAULT" PublicPermissions="RW" MountAtStartup="true"/> 
-        </Configuration>
-        <Import File="/opt/restforms2/src/Form.inc" Recurse="1" Flags="cuk" />
-        <Import File="/opt/restforms2/src/" Recurse="1" Flags="cuk" />
-    </Namespace>
+    <If Condition='"${CreateNamespace}"="yes"'>
+        <Log Text="Creating namespace ${Namespace}" Level="0"/> 
+        <Namespace Name="${Namespace}" Create="yes" Ensemble=""> 
+            <Configuration> 
+                <Database Name="${Namespace}-DATA" Dir="${DataDBPath}" Create="yes" MountRequired="true" Resource="%DB_DEFAULT" PublicPermissions="RW" MountAtStartup="true"/> 
+                <Database Name="${Namespace}-APP" Dir="${CodeDBPath}" Create="yes" MountRequired="true" Resource="%DB_DEFAULT" PublicPermissions="RW" MountAtStartup="true"/> 
+            </Configuration>
+            <Import File="${SourcePath}Form.inc" Recurse="1" Flags="cuk" />
+            <Import File="${SourcePath}" Recurse="1" Flags="cuk" />
+        </Namespace>
+    </If>
+    <If Condition='"${CreateNamespace}"="no"'>
+        <Log Text="Using namespace ${Namespace}" Level="0"/> 
+        <Namespace Name="${Namespace}" Create="no" Ensemble=""> 
+            <Import File="${SourcePath}Form.inc" Recurse="1" Flags="cuk" />
+            <Import File="${SourcePath}" Recurse="1" Flags="cuk" />
+        </Namespace>
+    </If>
 </Manifest>
 }
 
@@ -25,25 +48,39 @@ ClassMethod RunManifest(ByRef pVars, pLogLevel As %Integer = 0, pInstaller As %I
 }
 
 /// Installer Entry point    
-ClassMethod Run() As %Status
+ClassMethod Run(ByRef vars) As %Status
 {
     try { 
+        set previousNamespace = $namespace
         write "START INSTALLER",! 
-        set vars("Namespace") = ..#Namespace 
+
+        // set default values for installer variables
+        for ivar="SourcePath","Namespace","CreateNamespace","CreateDB","DataDBPath","CodeDBPath","CreateWebApp","WebApp","EnableUnitTestPortal" {
+            if '$data(vars(ivar)) set vars(ivar)=$parameter($classname(), ivar)
+        } 
         $$$ThrowOnError(..RunManifest(.vars)) 
 
         // create web application
-        $$$ThrowOnError(..CreateWebApp())
+        if vars("CreateWebApp")="yes" { 
+            $$$ThrowOnError(..CreateWebApp(vars("Namespace"), vars("WebApp")))
+        }
 
         // enable UnitTest Portal for APP namespace
-        zn "%SYS"
-        set ^SYS("Security","CSP","AllowPrefix","/csp/restforms2/","%UnitTest")=1
+        if vars("EnableUnitTestPortal")="yes" { 
+            zn "%SYS"
+            set defaultApp = $system.CSP.GetDefaultApp(vars("Namespace"))
+            set ^SYS("Security","CSP","AllowPrefix",defaultApp,"%UnitTest")=1
+            write !,"UnitTest Portal enabled on "_vars("Namespace")_" ("_defaultApp_")"
+        }
 
         if sc {
             write !,"INSTALLER SUCCESS",!
+            set $namespace = previousNamespace
+
         } else {
             do $SYSTEM.Process.Terminate($JOB,1)
         }
+
     } catch ex { 
         set sc = ex.AsStatus() 
         write $System.Status.GetErrorText(sc),! 
@@ -53,19 +90,19 @@ ClassMethod Run() As %Status
 }
 
 /// Create web application
-ClassMethod CreateWebApp() As %Status
+ClassMethod CreateWebApp(pNamespace As %String, pWebApp As %String) As %Status
 {
   set ret = $$$OK
   try {
     zn "%SYS" 
-    set webName = "/forms" 
+    set webName = pWebApp 
     set webProperties("DispatchClass") = "Form.REST.Main" 
-    set webProperties("NameSpace") = ..#Namespace 
+    set webProperties("NameSpace") = pNamespace 
     set webProperties("Enabled") = 1 
     set webProperties("AutheEnabled") = 32 
     $$$ThrowOnError(##class(Security.Applications).Create(webName, .webProperties))
 
-    write "Web application "_webName_" has been created!"
+    write !,"Web application "_webName_" has been created!"
   } catch ex {
     set ret = ex.AsStatus()
   } 
