@@ -37,7 +37,7 @@ ClassMethod sqlTypeToClass(type As %Integer = "") As %String
 
 ClassMethod logicalToJSON(datatype As %String = "", value As %String) As %String
 {
-    return:datatype="" value
+    return:datatype="" $zconvert(value, "O", "JSON")
     if datatype = "%Library.Date" {
         set result = ##class(%Date).LogicalToXSD(value)
     } elseif datatype = "%Library.TimeStamp" {
