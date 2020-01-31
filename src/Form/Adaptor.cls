@@ -22,49 +22,52 @@ Parameter DISPLAYPROPERTY As %String = "displayName";
 /// Use value of this parameter in SQL, as ORDER BY clause value 
 Parameter FORMORDERBY As %String;
 
-/// Выводит объект Id в формате JSON на текущее устройство
-/// Переопределите этот метод для конкретной формы, если есть какие-то особенности её обработки
-/// Возможно: заменить метод на генератор, который будет генерить код для формы
-/// Подразумевается, что форма хранимая
+/// %JSON.Adaptor mapping used during CREATE
+Parameter FORMCREATEMAPPING As %String;
+
+/// %JSON.Adaptor mapping used during READ (export to JSON)
+Parameter FORMREADMAPPING As %String;
+
+/// %JSON.Adaptor mapping used during UPDATE
+Parameter FORMUPDATEMAPPING As %String;
+
+/// Create an object from JSON
+ClassMethod createFromJSON(jsonInput, Output obj) As %Status
+{
+	set sc = $$$OK
+	set obj = ..%New()
+	$$$QuitOnError(obj.%JSONImport(jsonInput, $parameter(obj,"FORMCREATEMAPPING")))
+	$$$QuitOnError(obj.%Save())
+	quit sc
+}
+
+/// Read object and export to JSON
 ClassMethod toJSON(id As %Integer = "") As %Status
 {
-	#dim sc As %Status = $$$OK
+	set sc = $$$OK
 	set obj = ..%OpenId(id,,.sc)
-	return:$$$ISERR(sc) sc
-	return ##class(Form.JSON.OBJ).%ObjectToJSON(obj,,,$$$formatJSON)
+	$$$QuitOnError(sc)
+	$$$QuitOnError(obj.%JSONExport($parameter(obj,"FORMREADMAPPING")))
+	quit sc
 }
 
-/// Открывает объект по Id и перезаписывает все его свойства 
-/// соответствующими значениями из object 
-/// После чего сохраняет объект
-ClassMethod updateIdFromObject(id As %Integer = "", object = "") As %Status
+/// Update object from JSON
+ClassMethod updateFromJSON(id As %String, jsonInput, Output obj) As %Status
 {
-	#dim sc As %Status = $$$OK
-	return:'$isObject(object) $$$ERROR($$$GeneralError, "Pass an object as a second argument to updateIdFromObject from " _ $className())
+	set sc = $$$OK
 	set obj = ..%OpenId(id,,.sc)
-	return:$$$ISERR(sc) sc
-	set sc = obj.updateFromObject(object)
-	return:$$$ISERR(sc) sc
-	set sc = obj.%Save()
-	return sc
+	$$$QuitOnError(sc)
+	$$$QuitOnError(obj.%JSONImport(jsonInput, $parameter(obj,"FORMUPDATEMAPPING")))
+	$$$QuitOnError(obj.%Save())
+	quit sc
 }
 
-/// Устанавливает все поля текущего объекта из переданного объекта
-/// Это может быть динамический объект или объект того же класса
-Method updateFromObject(object) As %Status [ CodeMode = objectgenerator ]
+/// Delete object
+ClassMethod deleteObject(id) As %Status
 {
-	for i = 1:1:%class.Properties.Count() {
-        set prop = %class.Properties.GetAt(i)
-        if prop.Internal || prop.Calculated || prop.ReadOnly || prop.Private || prop.Identity || prop.MultiDimensional continue
-        
-        // Вопросы:
-        // 1. Что с объектами - в принципе
-        // 2. Что со списками
-        // 3. Пустые поля - пропускать или что делать? 
-        // 4. Что с потоками
-        do %code.WriteLine(" set .." _ prop.Name _ " = object." _ prop.Name)
-    }
-    do %code.WriteLine(" Quit $$$OK")
+	set sc = $$$OK
+	$$$QuitOnError(..%DeleteId(id))
+	quit sc
 }
 
 /// Get basic information about one object

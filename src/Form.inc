@@ -12,7 +12,6 @@ ROUTINE Form [Type=INC]
 #define formatTime		7
 
 #define toJSONClassMethod "toJSON"
-#define updateClassMethod "updateIdFromObject"
 
 #define skipClasses ",Form.Generators,"_$$$adaptorClass_","
 #define adaptorClass "Form.Adaptor"

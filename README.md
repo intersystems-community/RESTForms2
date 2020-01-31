@@ -1,6 +1,32 @@
 # RESTForms
 RESTForms is a generalized REST API backend for web applications built on InterSystems (Caché or Ensemble) backend.
 
+# Development installation
+
+This is a development version.
+
+1. Clone repo
+2. Build development image: `$ docker-compose build`
+3. Run container: `$ docker-compose up -d`
+3. Open an interactive session
+```
+  $ docker exec -it restforms2 bash
+  $ iris session IRIS
+```
+4. Run all tests
+```
+  zn "restforms2"
+  set ^UnitTestRoot = "/app/src/Form/UnitTests"
+  do ##class(%UnitTest.Manager).RunTest("", "/nodelete")
+```
+  or run a specific test case
+```
+  zn "restforms2"
+  set ^UnitTestRoot = "/app/src/Form/UnitTests"
+  do ##class(%UnitTest.Manager).RunTest(":Form.UnitTests.ObjectCRUD", "/nodelete")
+```
+5. Check [UnitTest Report](http://localhost:52773/csp/restforms2/%25UnitTest.Portal.Home.zen?$NAMESPACE=RESTFORMS2) 
+
 # Installation
 
 1. Import latest [release](https://github.com/intersystems-ru/RESTForms/releases) appropriate for your Caché version (161 for 2016.1, 162 for 2016.2+).

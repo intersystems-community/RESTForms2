@@ -11,7 +11,6 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 <Route Url="/:form/:id/:property" Method="GET" Call="getFormObjectProperty"/>
 <Route Url="/:form" Method="POST" Call="createFormObject"/>
 <Route Url="/:form/:id" Method="PUT" Call="updateFormDynamicObject"/>
-<Route Url="/:form" Method="PUT" Call="updateFormClassObject"/>
 <Route Url="/:form/:id" Method="DELETE" Call="deleteFormObject"/>
 </Routes>
 }
@@ -58,55 +57,21 @@ ClassMethod getFormObjectProperty(class As %String = "", id As %Integer = "", pr
 /// Возвращает {"Id": "Значение Id"} при успехе
 ClassMethod createFormObject(class As %String) As %Status
 {
-	#dim sc As %Status = $$$OK
-	set sc = ##class(Form.Info).formExistsStatus(class)
-	return:$$$ISERR(sc) sc
-	set sc = ..checkObjPermission(class, "C")
-	return:$$$ISERR(sc) sc
-	
-	set obj = $classmethod(class, "%New")
-	set sc = obj.%JSONImport(%request.Content)
-	if $$$ISERR(sc) return sc
-	
-	set sc = obj.%Save()
-	if $$$ISOK(sc) {
-		 write "{""Id"": """ _ obj.%Id() _ """}" 
-	}
-	
+	set sc = $$$OK
+	$$$QuitOnError(##class(Form.Info).formExistsStatus(class))
+	$$$QuitOnError(..checkObjPermission(class, "C"))
+
+	$$$QuitOnError($classmethod(class, "createFromJSON", %request.Content, .obj))
+	write "{""Id"": """ _ obj.%Id() _ """}" 
 	return sc
 }
 
 /// Обновление объекта id для формы form (берём из %request.Content)
 ClassMethod updateFormDynamicObject(class As %String, id As %Integer = "") As %Status
 {
-	#dim sc As %Status = $$$OK
-	set sc = ..checkObjPermission(class, "U")
-	return:$$$ISERR(sc) sc
-	
-	// TODO: check if $$$updateClassMethod (updateIdFromObject) is used anywhere else
-	
-	set obj = $classmethod(class, "%OpenId", id)
-	set sc = obj.%JSONImport(%request.Content)
-	if $$$ISERR(sc) return sc
-	set sc = obj.%Save()
-	
-	return sc
-}
-
-/// Обновление объекта id для формы form (берём из %request.Content)
-ClassMethod updateFormClassObject(class As %String) As %Status
-{
-	#dim sc As %Status = $$$OK
-	set sc = ..checkObjPermission(class, "U")
-	return:$$$ISERR(sc) sc
-	
-	set obj = %request.Content
-
-	set objClass = $className(obj)
-	return:objClass'=class $$$ERROR("Expected instance of '" _ class _ "' class, received instance of '" _ objClass _"'")
-	
-	set sc = obj.%Save()
-	
+	set sc = $$$OK
+	$$$QuitOnError(..checkObjPermission(class, "U"))
+	$$$QuitOnError($classmethod(class, "updateFromJSON", id, %request.Content, .obj))
 	return sc
 }
 
@@ -119,7 +84,7 @@ ClassMethod deleteFormObject(class As %String = "", id As %Integer = "") As %Sta
 	set sc = ..checkObjPermission(class, "D")
 	return:$$$ISERR(sc) sc
 
-	set sc = $classMethod(class, "%DeleteId", id)
+	set sc = $classMethod(class, "deleteObject", id)
 	
 	return sc
 }

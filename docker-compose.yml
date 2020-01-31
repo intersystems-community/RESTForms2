@@ -1,11 +1,10 @@
 version: '3.2'
-
 services:
   iris:
-    image: store/intersystems/iris-community:2019.3.0.309.0
-    container_name: iris-community-2019.3
+    build: .
+    restart: always
+    container_name: restforms2
     ports:
-    - "51773:51773"
-    - "52773:52773"
+      - 52773:52773
     volumes:
-    - ./shared:/shared
+      - .:/app
