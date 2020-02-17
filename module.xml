@@ -3,11 +3,24 @@
   <Document name="restforms2.ZPM">
     <Module>
       <Name>restforms2</Name>
-      <Version>1.0.1</Version>
+      <Version>1.0.2</Version>
       <Packaging>module</Packaging>
       <SourcesRoot>src</SourcesRoot>
       <Resource Name="Form.PKG"/>
       <Resource Name="Form.inc"/>
+      <CSPApplication 
+        Url="/forms"
+        Path="/src/csp"
+        Recurse="1"
+        Directory="{$cspdir}/forms" 
+        MatchRoles=":{$dbrole}"
+        PasswordAuthEnabled="1"
+        UnauthenticatedEnabled="0"
+        DispatchClass="Form.REST.Main"
+        ServeFiles="1"
+        CookiePath="/forms"
+        UseCookies="2"
+       />
     </Module>
   </Document>
 </Export>
