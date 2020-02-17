@@ -11,6 +11,7 @@
       <CSPApplication 
         Url="/forms"
         Recurse="1"
+        Directory="{$cspdir}/forms" 
         MatchRoles=":{$dbrole}"
         PasswordAuthEnabled="1"
         UnauthenticatedEnabled="0"
