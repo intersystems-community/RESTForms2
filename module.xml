@@ -3,14 +3,16 @@
   <Document name="restforms2.ZPM">
     <Module>
       <Name>restforms2</Name>
-      <Version>1.0.3</Version>
+      <Version>1.0.4</Version>
       <Packaging>module</Packaging>
       <SourcesRoot>src</SourcesRoot>
       <Resource Name="Form.PKG"/>
       <Resource Name="Form.inc"/>
       <CSPApplication 
         Url="/forms"
+        Path="/src"
         Recurse="1"
+        Directory="{$cspdir}/forms" 
         MatchRoles=":{$dbrole}"
         PasswordAuthEnabled="1"
         UnauthenticatedEnabled="0"
