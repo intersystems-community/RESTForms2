@@ -10,9 +10,7 @@
       <Resource Name="Form.inc"/>
       <CSPApplication 
         Url="/forms"
-        Path="/src/csp"
         Recurse="1"
-        Directory="{$cspdir}/forms" 
         MatchRoles=":{$dbrole}"
         PasswordAuthEnabled="1"
         UnauthenticatedEnabled="0"
