@@ -10,6 +10,7 @@
       <Resource Name="Form.inc"/>
       <CSPApplication 
         Url="/forms"
+        Path="/src"
         Recurse="1"
         Directory="{$cspdir}/forms" 
         MatchRoles=":{$dbrole}"
