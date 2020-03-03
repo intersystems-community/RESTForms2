@@ -27,9 +27,14 @@ This is a development version.
 ```
 5. Check [UnitTest Report](http://localhost:52773/csp/restforms2/%25UnitTest.Portal.Home.zen?$NAMESPACE=RESTFORMS2) 
 
-# Installation
+# ZPM Installation
+1. If you have [zpm](https://openexchange.intersystems.com/package/ObjectScript-Package-Manager-2) installed:
+USER>zp
+zpm:USER>install restforms2
 
-1. Import latest [release](https://github.com/intersystems-ru/RESTForms/releases) appropriate for your Caché version (161 for 2016.1, 162 for 2016.2+).
+# Manual Installation
+
+1. Import the latest [release](https://github.com/intersystems-community/RESTForms2/releases) appropriate InterSystems IRIS.
 2. Create REST web app with `Form.REST.Main` as Dispatch Class.
 3. Generate test data: `do ##class(Form.Util.Init).populateTestForms()`
 
