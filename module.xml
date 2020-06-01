@@ -1,13 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-  <Document name="restforms2.MODULE">
+  <Document name="restforms2.ZPM">
     <Module>
       <Name>restforms2</Name>
-      <Version>1.0.0</Version>
+      <Version>1.0.4</Version>
       <Packaging>module</Packaging>
       <SourcesRoot>src</SourcesRoot>
       <Resource Name="Form.PKG"/>
       <Resource Name="Form.inc"/>
+      <CSPApplication 
+        Url="/forms"
+        Path="/src"
+        Recurse="1"
+        Directory="{$cspdir}/forms" 
+        MatchRoles=":{$dbrole}"
+        PasswordAuthEnabled="1"
+        UnauthenticatedEnabled="0"
+        DispatchClass="Form.REST.Main"
+        ServeFiles="1"
+        CookiePath="/forms"
+        UseCookies="2"
+       />
     </Module>
   </Document>
 </Export>
