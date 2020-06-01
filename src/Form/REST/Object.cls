@@ -1,4 +1,4 @@
-/// Брокер работы с индивидуальными объектами
+/// Work with individual objects
 Class Form.REST.Object Extends Form.REST.Abstract
 {
 
@@ -53,8 +53,8 @@ ClassMethod getFormObjectProperty(class As %String = "", id As %Integer = "", pr
 	return sc
 }
 
-/// Создание нового объекта для формы form (берём из %request.Content)
-/// Возвращает {"Id": "Значение Id"} при успехе
+/// Create new object (from %request.Content)
+/// Returns {"Id": "New Id Value"} on success
 ClassMethod createFormObject(class As %String) As %Status
 {
 	set sc = $$$OK
@@ -66,7 +66,7 @@ ClassMethod createFormObject(class As %String) As %Status
 	return sc
 }
 
-/// Обновление объекта id для формы form (берём из %request.Content)
+/// Update object by id for form
 ClassMethod updateFormDynamicObject(class As %String, id As %Integer = "") As %Status
 {
 	set sc = $$$OK
@@ -75,7 +75,7 @@ ClassMethod updateFormDynamicObject(class As %String, id As %Integer = "") As %S
 	return sc
 }
 
-/// Удаление объекта id для формы form
+/// Delete object by id from form
 ClassMethod deleteFormObject(class As %String = "", id As %Integer = "") As %Status
 {
 	#dim sc As %Status = $$$OK
@@ -90,3 +90,4 @@ ClassMethod deleteFormObject(class As %String = "", id As %Integer = "") As %Sta
 }
 
 }
+

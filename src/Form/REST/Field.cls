@@ -1,4 +1,4 @@
-/// Брокер работы с полями форм
+/// Broker for form fields
 Class Form.REST.Field Extends Form.REST.Abstract
 {
 
@@ -11,13 +11,13 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 </Routes>
 }
 
-/// Добавить поле в форме
-/// URL запроса: POST /form/field/:form
-/// Тело:
+/// Add field to form
+/// URL: POST /form/field/:form
+/// Body:
 /// {
 /// 	 "name":"services",
 /// 	 "collection":"",
-/// 	 "displayName":"Ресурс",
+/// 	 "displayName":"Resource",
 /// 	 "type":"%Library.String",
 /// 	 "required": "0"
 /// }
@@ -40,13 +40,13 @@ ClassMethod createFormField(class As %String = "") As %Status
 	return sc
 }
 
-/// Изменить поле в форме
-/// URL запроса: PUT /form/field/:form
-/// Тело:
+/// Modify field in form
+/// URL: PUT /form/field/:form
+/// Body:
 /// {
 /// 	 "name":"services",
 /// 	 "collection":"",
-/// 	 "displayName":"Ресурс",
+/// 	 "displayName":"Resource",
 /// 	 "type":"%String",
 /// 	 "required": "0"
 /// }
@@ -69,7 +69,7 @@ ClassMethod updateFormField(class As %String = "") As %Status
 	return sc
 }
 
-/// Удалить поле в форме
+/// Delete field in form
 ClassMethod deleteFormField(class As %String = "", property As %String = "") As %Status
 {
 	#dim sc As %Status = $$$OK
@@ -81,3 +81,4 @@ ClassMethod deleteFormField(class As %String = "", property As %String = "") As 
 }
 
 }
+

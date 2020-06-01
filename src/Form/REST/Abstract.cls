@@ -1,6 +1,7 @@
 Include (%occErrors, %ZEN.Utils, Form)
 
-/// Абстрактный класс, реализующий техническую обработку входящего запроса.
+/// Abstract broker for tech request processing. 
+/// No business logic goes here
 Class Form.REST.Abstract Extends %CSP.REST
 {
 
@@ -127,21 +128,6 @@ ClassMethod getStackInfo() As %ListOfDataTypes
 	}
 	
 	return list
-}
-
-/// This method Gets called prior to dispatch of the request. Put any common code here
-/// that you want to be executed for EVERY request. If pContinue is set to 0, the
-/// request will NOT be dispatched according to the UrlMap. If this case it's the
-/// responsibility of the user to return a response.
-ClassMethod OnPreDispatch(pUrl As %String, pMethod As %String, ByRef pContinue As %Boolean) As %Status
-{
-    Quit ..convertRequestBody()
-}
-
-/// Конвертируем %request.Content в UTF8 и в объект класса %ZEN.proxyObject
-ClassMethod convertRequestBody() As %Status
-{
-	return $$$OK
 }
 
 ClassMethod checkObjPermission(class As %String, action As %String(VALUELIST="C,R,U,D")) As %Status

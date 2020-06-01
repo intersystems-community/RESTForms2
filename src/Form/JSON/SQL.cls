@@ -278,7 +278,7 @@ Method %DrawJSON(nocount As %Boolean = {$$$NO}) As %Status [ Internal ]
 		Set tRow = 0
 		Set rows = ""
 			// The last condition - FORMS - pagination
-		While (tRS.%Next(.tSC) && ((..maxRows = 0) || (tRow < ..maxRows)) && (tRow < tEndRow)) { // Последнее условие - FORMS - пагинация
+		While (tRS.%Next(.tSC) && ((..maxRows = 0) || (tRow < ..maxRows)) && (tRow < tEndRow)) {
 			Quit:$$$ISERR(tSC)
 			Set tRow = tRow + 1
 
@@ -325,3 +325,4 @@ Method %OnCreateResultSet(Output tSC As %Status, pInfo As %ZEN.Auxiliary.QueryIn
 }
 
 }
+

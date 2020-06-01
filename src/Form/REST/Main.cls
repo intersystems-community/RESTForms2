@@ -13,7 +13,7 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 </Routes>
 }
 
-/// Выход из системы
+/// Logout user from current session
 ClassMethod logout() As %Status
 {
     #dim %session As %CSP.Session
@@ -22,13 +22,14 @@ ClassMethod logout() As %Status
     return st
 }
 
-/// Тестовый метод
+/// Test method
 ClassMethod test() As %Status
 {
     write "{""Status"": ""OK""}"
     return $$$OK
 }
 
+/// Language info
 ClassMethod info() As %Status
 {
 	set info = {}
@@ -38,3 +39,4 @@ ClassMethod info() As %Status
 }
 
 }
+

@@ -100,9 +100,9 @@ ClassMethod modifyClassProperty(className As %String = "", name As %String, type
 	return ..compileClass(className)
 }
 
-/// Удалить свойство класса
-/// className - класс
-/// name - имя свойства
+/// Delete class property
+/// className - class
+/// name - property
 ClassMethod deleteClassProperty(className As %String = "", name As %String) As %Status
 {
 	#dim sc As %Status = $$$OK
@@ -116,8 +116,8 @@ ClassMethod deleteClassProperty(className As %String = "", name As %String) As %
 	return ..compileClass(className)
 }
 
-/// Скомпилировать класс, вернуть статус.
-/// Не выводить ничего на устройство.
+/// Compile class and return status
+/// Do not output anything to device
 ClassMethod compileClass(className As %String = "") As %Status [ CodeMode = expression ]
 {
 $system.OBJ.Compile(className, "cuks /checkuptodate=expandedonly /displaylog=0 /displayerror=0")
@@ -157,3 +157,4 @@ $$$comMemberKeyGet(className, $$$cCLASSproperty, name, $$$cPROPsqlfieldname)
 }
 
 }
+

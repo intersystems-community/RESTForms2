@@ -10,7 +10,6 @@ Parameter DISPLAYPROPERTY As %String = "name";
 
 /// The main property describing this object, automatically computes 
 /// on insert or update (for SQL) or on save (for object access)
-/// Property displayName As %String(DISPLAYNAME = "Компаниия") [ SqlComputeCode = {set {*} = {name}}, SqlComputed, SqlComputeOnChange = (%%INSERT, %%UPDATE) ];
 Property name As %String(DISPLAYNAME = "Name", POPSPEC = "Company()");
 
 /// The <class>Person</class> objects associated with this <class>Company</class>.
@@ -38,3 +37,4 @@ Storage Default
 }
 
 }
+

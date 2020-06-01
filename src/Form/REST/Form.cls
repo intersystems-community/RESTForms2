@@ -1,4 +1,4 @@
-/// Класс работы с формами и их содержимым
+/// Work with forms and their contents
 Class Form.REST.Form Extends Form.REST.Abstract
 {
 

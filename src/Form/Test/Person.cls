@@ -35,19 +35,19 @@ Property num As %Numeric(DISPLAYNAME = "Number") [ InitialExpression = "2.15" ];
 
 ClassMethod queryLIST() As %String
 {
-  Quit "name, dob, аge "
+  Quit "name, dob, age "
 }
 
 ClassMethod customquerySAMPLE() As %String
 {
   Quit "Select company->Name as company, name, ""relative""->name as partner, "_
-    "аge, Home_City, Home_House, Home_Street "_
+    "age, Home_City, Home_House, Home_Street "_
     "FROM Form_Test.Person"
 }
 
 /// Person's age.<br>
 /// This is a calculated field whose value is derived from <property>DOB</property>.
-Property аge As %Integer(%JSONINCLUDE = "OUTPUTONLY", DISPLAYNAME = "Age") [ Calculated, SqlComputeCode = { set {*}=##class(Form.Test.Person).currentAge({dob})}, SqlComputed, SqlComputeOnChange = dob ];
+Property age As %Integer(%JSONINCLUDE = "OUTPUTONLY", DISPLAYNAME = "Age") [ Calculated, SqlComputeCode = { set {*}=##class(Form.Test.Person).currentAge({dob})}, SqlComputed, SqlComputeOnChange = dob ];
 
 /// This class method calculates a current age given a date of birth <var>date</var>.
 ClassMethod currentAge(date As %Date = "") As %Integer [ CodeMode = expression ]
@@ -64,6 +64,18 @@ Property Home As Form.Test.Address(DISPLAYNAME = "House");
 
 /// The company this person works for.
 Relationship company As Form.Test.Company(%JSONINCLUDE = "INOUT", %JSONREFERENCE = "ID", DISPLAYNAME = "Company") [ Cardinality = one, Inverse = employees ];
+
+Property company2 As Form.Test.Company(%JSONINCLUDE = "INOUT", %JSONREFERENCE = "ID", DISPLAYNAME = "Company");
+
+XData LimitedMapping
+{
+<Mapping xmlns="http://www.intersystems.com/jsonmapping">
+  <Property Name="name" FieldName="full_Name"/>
+  <Property Name="dob" Include="NONE"/>
+  <Property Name="num" Include="NONE"/>
+  <Property Name="company" Include="NONE"/>
+</Mapping>
+}
 
 XData CreateMapping
 {
@@ -142,6 +154,9 @@ Storage Default
 <Value name="14">
 <Value>FORMUPDATEMAPPING</Value>
 </Value>
+<Value name="15">
+<Value>company2</Value>
+</Value>
 </Data>
 <DataLocation>^Form.Test.PersonD</DataLocation>
 <DefaultData>PersonDefaultData</DefaultData>
@@ -186,3 +201,4 @@ Storage Default
 }
 
 }
+
