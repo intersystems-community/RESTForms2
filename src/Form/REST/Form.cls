@@ -8,7 +8,6 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 {
 <Routes>
 <Map Prefix="/field" Forward="Form.REST.Field"/>
-<Map Prefix="/file" Forward="Form.REST.File"/>
 <Map Prefix="/object" Forward="Form.REST.Object"/>
 <Map Prefix="/objects" Forward="Form.REST.Objects"/>
 
@@ -46,3 +45,4 @@ ClassMethod getFormInfo(form As %String = "") As %Status
 }
 
 }
+
