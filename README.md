@@ -28,8 +28,11 @@ This is a development version.
 5. Check [UnitTest Report](http://localhost:52773/csp/restforms2/%25UnitTest.Portal.Home.zen?$NAMESPACE=RESTFORMS2) 
 
 # Installation
+## With ZPM
+ZPM:User>install restforms2
 
-1. Import latest [release](https://github.com/intersystems-ru/RESTForms/releases) appropriate for your Caché version (161 for 2016.1, 162 for 2016.2+).
+## Manually
+1. Import latest [release](https://github.com/intersystems-community/RESTForms2/releases).
 2. Create REST web app with `Form.REST.Main` as Dispatch Class.
 3. Generate test data: `do ##class(Form.Util.Init).populateTestForms()`
 
