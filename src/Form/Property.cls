@@ -24,6 +24,8 @@ ClassMethod propertyToMetadata(className As %String = "", name = "") As %Dynamic
 
 	set metadata.required = +$$$comMemberKeyGet(className, $$$cCLASSproperty, name, $$$cPROPrequired)	
 	set metadata.category = ..determineClassCategory(metadata.type)
+	set metadata.jsonreference = ..getPropertyParam(className, name, "%JSONREFERENCE")
+	
 	return metadata
 }
 

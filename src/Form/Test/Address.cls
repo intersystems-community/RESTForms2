@@ -1,13 +1,13 @@
-Class Form.Test.Address Extends (%SerialObject, %JSON.Adaptor, %Populate)
+Class Form.Test.Address Extends (%SerialObject, Form.Adaptor, %Populate)
 {
 
-Property House As %Integer(MAXVAL = 999, MINVAL = 1);
+Property House As %Integer(DISPLAYNAME = "House", MAXVAL = 999, MINVAL = 1);
 
 /// The street address.
-Property Street As %String(MAXLEN = 80, POPSPEC = "Street()");
+Property Street As %String(DISPLAYNAME = "Street", MAXLEN = 80, POPSPEC = "Street()");
 
 /// The city name.
-Property City As %String(MAXLEN = 80, POPSPEC = "City()");
+Property City As %String(DISPLAYNAME = "City", MAXLEN = 80, POPSPEC = "City()");
 
 Storage Default
 {
@@ -28,3 +28,4 @@ Storage Default
 }
 
 }
+

@@ -7,11 +7,11 @@ Class Form.REST.Abstract Extends %CSP.REST
 
 Parameter CONTENTTYPE = "application/json";
 
-Parameter CHARSET = "UTF-8";
+Parameter CHARSET = "RAW";
 
 Parameter UseSession As Integer = 1;
 
-Parameter CONVERTINPUTSTREAM = 1;
+Parameter CONVERTINPUTSTREAM = 0;
 
 /// This method takes a status, renders it as json (if requested) and outputs the result
 ClassMethod outputStatus(pSC As %Status) As %Status [ Internal ]
