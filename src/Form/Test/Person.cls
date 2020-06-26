@@ -2,6 +2,8 @@
 Class Form.Test.Person Extends (%Persistent, Form.Adaptor, %Populate)
 {
 
+Parameter INFO = "id AS _id, name As displayName, dob";
+
 Parameter FORMNAME = "Person";
 
 Parameter OBJPERMISSIONS As %String = "CRUD";
