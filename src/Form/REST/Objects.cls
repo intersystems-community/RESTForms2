@@ -105,7 +105,7 @@ ClassMethod queryALLOBJ(class As %String) As %String
 			Set category = ##class(Form.Property).determineClassCategory(type)
 			Set sqlName = ##class(Form.Property).getPropertySQLName(class, property)
 	
-			If category = "serial" {
+			If category = $$$cCLASSCLASSTYPESERIAL {
 				Set queryBase = queryBase _ ..SerialToJSONOBJECT(sqlName, type)
 			} Else {
 				Set:$system.SQL.IsReservedWord(sqlName) sqlName = $$$QUOTE(sqlName)
@@ -135,7 +135,7 @@ ClassMethod SerialToJSONOBJECT(refProperty As %String, class As %Dictionary.Clas
 			Set category = ##class(Form.Property).determineClassCategory(type)
 			Set sqlName = ##class(Form.Property).getPropertySQLName(class, property)
 		
-			If category = "serial" {
+			If category = $$$cCLASSCLASSTYPESERIAL {
 				Set queryBase = queryBase _ "'" _ sqlName _ "':" _ ..SerialToJSONOBJECT(refProperty _ "_" _ sqlName, type, level + 1)
 			} Else {
 				Set queryBase = queryBase _ "'" _ sqlName _ "':" _  refProperty _ "_" _ sqlName
@@ -146,7 +146,7 @@ ClassMethod SerialToJSONOBJECT(refProperty As %String, class As %Dictionary.Clas
 		Set property=$$$comMemberNext(class, $$$cCLASSproperty, property)		
 	}
 
-	Set queryBase = $e(queryBase, 1,*-2) _ ") " _ $s(level=0:"JSON@" _ refProperty, 1:"")
+	Set queryBase = $e(queryBase, 1,*-2) _ ") " _ $s(level=0:$$$jsonLabel _ refProperty, 1:"")
 	Return queryBase
 }
 
