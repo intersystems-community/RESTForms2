@@ -3,7 +3,7 @@
   <Document name="restforms2.ZPM">
     <Module>
       <Name>restforms2</Name>
-      <Version>1.0.6</Version>
+      <Version>1.0.7</Version>
       <Packaging>module</Packaging>
       <SourcesRoot>src</SourcesRoot>
       <Resource Name="Form.PKG"/>
