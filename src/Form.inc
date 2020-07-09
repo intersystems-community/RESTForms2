@@ -1,4 +1,3 @@
-ROUTINE Form [Type=INC]
 #define settingsGlobal ^form.settings
 #define formNameParam "FORMNAME"
 #define displayProp "DISPLAYPROPERTY"
@@ -38,3 +37,5 @@ ROUTINE Form [Type=INC]
 
 #define domain "RESTFORMS"
 #define domainq """"_$$$domain_""""
+
+#define jsonLabel "JSON@"
