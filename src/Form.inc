@@ -1,3 +1,4 @@
+ROUTINE Form [Type=INC]
 #define settingsGlobal ^form.settings
 #define formNameParam "FORMNAME"
 #define displayProp "DISPLAYPROPERTY"
