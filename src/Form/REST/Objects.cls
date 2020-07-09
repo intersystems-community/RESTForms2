@@ -94,7 +94,7 @@ ClassMethod queryINFO(class As %String) As %String
 /// <example>w ##class(Form.REST.Objects).queryALLOBJ("Form.Test.Simple")</example>
 ClassMethod queryALLOBJ(class As %String) As %String
 {
-	Set queryBase = ""
+	Set queryBase = "%ID ID, "
 	Set property=$$$comMemberNext(class, $$$cCLASSproperty, "")
 	While property'="" {
 		Set internal = $$$comMemberKeyGet(class, $$$cCLASSproperty, property, $$$cPROPinternal)
