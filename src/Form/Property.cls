@@ -26,6 +26,10 @@ ClassMethod propertyToMetadata(className As %String = "", name = "") As %Dynamic
 	set metadata.category = ..determineClassCategory(metadata.type)
 	set metadata.jsonreference = ..getPropertyParam(className, name, "%JSONREFERENCE")
 	
+	set metadata.readonly = (($$$comMemberKeyGet(className, $$$cCLASSproperty, name, $$$cPROPsqlcomputed) = 1) || 
+							 ($$$comMemberKeyGet(className, $$$cCLASSproperty, name, $$$cPROPcalculated) = 1) ||
+							 ($$$comMemberKeyGet(className, $$$cCLASSproperty, name, $$$cPROPtransient) = 1))
+	
 	return metadata
 }
 

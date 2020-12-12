@@ -90,6 +90,66 @@ ClassMethod queryINFO(class As %String) As %String
 	Return queryBase
 }
 
+/// Return all non collection object fields
+/// <example>w ##class(Form.REST.Objects).queryALLOBJ("Form.Test.Simple")</example>
+ClassMethod queryALLOBJ(class As %String) As %String
+{
+	Set queryBase = "%ID ID, "
+	Set property=$$$comMemberNext(class, $$$cCLASSproperty, "")
+	While property'="" {
+		Set internal = $$$comMemberKeyGet(class, $$$cCLASSproperty, property, $$$cPROPinternal)
+		Set displayName = ##class(Form.Property).getPropertyParam(class, property, $$$propDisplayNameParam)
+		Set collection = $$$comMemberKeyGet(class, $$$cCLASSproperty, property, $$$cPROPcollection)
+		If ((internal '= $$$YES) && (displayName'="") && (collection = "")) {
+			Set type = ##class(Form.Property).getPropertyType(class, property)
+			Set category = ##class(Form.Property).determineClassCategory(type)
+			Set sqlName = ##class(Form.Property).getPropertySQLName(class, property)
+	
+			If category = $$$cCLASSCLASSTYPESERIAL {
+				Set queryBase = queryBase _ ..SerialToJSONOBJECT(sqlName, type)
+			} Else {
+				Set:$system.SQL.IsReservedWord(sqlName) sqlName = $$$QUOTE(sqlName)
+				Set queryBase = queryBase _ sqlName
+			}
+			Set queryBase = queryBase _ ", "
+		}
+		
+		Set property=$$$comMemberNext(class, $$$cCLASSproperty, property)		
+	}
+
+	Set queryBase = $e(queryBase, 1,*-2) 
+	Return queryBase
+}
+
+/// refProperty - property name for a serial class
+/// class - serial class
+ClassMethod SerialToJSONOBJECT(refProperty As %String, class As %Dictionary.Classname, level As %Integer = 0) As %String
+{
+	Set queryBase = "JSON_OBJECT("
+	Set property=$$$comMemberNext(class, $$$cCLASSproperty, "")
+	While property'="" {
+		Set internal = $$$comMemberKeyGet(class, $$$cCLASSproperty, property, $$$cPROPinternal)
+		Set collection = $$$comMemberKeyGet(class, $$$cCLASSproperty, property, $$$cPROPcollection)
+		If ((internal '= $$$YES) && (collection = "")) {
+			Set type = ##class(Form.Property).getPropertyType(class, property)
+			Set category = ##class(Form.Property).determineClassCategory(type)
+			Set sqlName = ##class(Form.Property).getPropertySQLName(class, property)
+		
+			If category = $$$cCLASSCLASSTYPESERIAL {
+				Set queryBase = queryBase _ "'" _ sqlName _ "':" _ ..SerialToJSONOBJECT(refProperty _ "_" _ sqlName, type, level + 1)
+			} Else {
+				Set queryBase = queryBase _ "'" _ sqlName _ "':" _  refProperty _ "_" _ sqlName
+			}
+			Set queryBase = queryBase _ ", "
+		}
+		
+		Set property=$$$comMemberNext(class, $$$cCLASSproperty, property)		
+	}
+
+	Set queryBase = $e(queryBase, 1,*-2) _ ") " _ $s(level=0:$$$jsonLabel _ refProperty, 1:"")
+	Return queryBase
+}
+
 /// Return id, dislpayName and class
 /// <example>w ##class(Form.REST.Objects).queryINFOCLASS("Form.Test.Simple")</example>
 ClassMethod queryINFOCLASS(class As %String) As %String
@@ -123,3 +183,4 @@ ClassMethod getFormObjectsCustom(class As %String = "", queryType As %String) As
 }
 
 }
+

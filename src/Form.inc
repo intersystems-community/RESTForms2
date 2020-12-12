@@ -38,3 +38,5 @@ ROUTINE Form [Type=INC]
 
 #define domain "RESTFORMS"
 #define domainq """"_$$$domain_""""
+
+#define jsonLabel "JSON@"

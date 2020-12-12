@@ -7,11 +7,10 @@ Parameter CHARSET = "UTF-8";
 XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 {
 <Routes>
-<Route Url="/:form/:id" Method="GET" Call="getFormObject"/>
-<Route Url="/:form/:id/:property" Method="GET" Call="getFormObjectProperty"/>
+<Route Url="/:form/(.*)" Method="GET" Call="getFormObject"/>
 <Route Url="/:form" Method="POST" Call="createFormObject"/>
-<Route Url="/:form/:id" Method="PUT" Call="updateFormDynamicObject"/>
-<Route Url="/:form/:id" Method="DELETE" Call="deleteFormObject"/>
+<Route Url="/:form/(.*)" Method="PUT" Call="updateFormDynamicObject"/>
+<Route Url="/:form/(.*)" Method="DELETE" Call="deleteFormObject"/>
 </Routes>
 }
 

@@ -1,3 +1,5 @@
+Include Form
+
 /// Various datatype conversion utilities
 Class Form.Util.Converter [ Abstract ]
 {
@@ -37,6 +39,7 @@ ClassMethod sqlTypeToClass(type As %Integer = "") As %String
 
 ClassMethod logicalToJSON(datatype As %String = "", value As %String) As %String
 {
+	return:datatype=$$$jsonLabel {}.%FromJSON(value)
     return:datatype="" $zconvert(value, "O", "JSON")
     if datatype = "%Library.Date" {
         set result = ##class(%Date).LogicalToXSD(value)
@@ -84,3 +87,4 @@ ClassMethod jsonToLogical(datatype As %String = "", value As %String) As %String
 }
 
 }
+

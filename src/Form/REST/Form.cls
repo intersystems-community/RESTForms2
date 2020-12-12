@@ -11,6 +11,8 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 <Map Prefix="/object" Forward="Form.REST.Object"/>
 <Map Prefix="/objects" Forward="Form.REST.Objects"/>
 
+<Route Url="/property/:form/(.*)" Method="GET" Call="Form.REST.Object:getFormObjectProperty"/>
+
 <Route Url="/info" Method="GET" Call="getFormsList"/>
 <Route Url="/info/all" Method="GET" Call="getFormsMetadata"/>
 <Route Url="/info/:form" Method="GET" Call="getFormInfo"/>

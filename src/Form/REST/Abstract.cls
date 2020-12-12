@@ -33,7 +33,7 @@ ClassMethod outputStatus(pSC As %Status) As %Status [ Internal ]
             If $$$ISERR(tSC) Quit
 
             #; Write the JSON to the output device
-            Set tSC = tJSON.%ToJSON(, "aeloqutwc")
+            Set tSC = tJSON.%ToJSON(, "aeloqtwc")
             If $$$ISERR(tSC) Quit
             
         } else {

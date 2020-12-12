@@ -238,7 +238,7 @@ Method %DrawJSON(nocount As %Boolean = {$$$NO}) As %Status [ Internal ]
 		Set tInfo = ##class(%ZEN.Auxiliary.QueryInfo).%New()
 		Merge tInfo.parms=tParms
 
-		#Dim tRS As %Library.ResultSet
+		#Dim tRS As %SQL.StatementResult
 		Set tRS = ..%CreateResultSet(.tSC,tInfo)
 		If $$$ISERR(tSC)||'$IsObject(tRS) {
 			Quit
@@ -254,9 +254,21 @@ Method %DrawJSON(nocount As %Boolean = {$$$NO}) As %Status [ Internal ]
 			}
 		}
 		Else {
-			Set tCols = tRS.%ResultColumnCount
+			
+			#dim tMetadata As SQL.StatementMetadata
+			set tMetadata = tRS.%GetMetadata()
+			set tCols = tMetadata.columns.Count()
 			For c = 1:1:tCols {
-				Set tColInfo(c,"name") = tRS.%Metadata.columns.GetAt(c).label
+				#dim tColumn As %SQL.StatementColumn
+				set tColumn = tMetadata.columns.GetAt(c)
+				set tColName = tColumn.colName
+				If $e(tColumn.colName, 1, 5) = $$$jsonLabel {
+					Set tColInfo(c,"name") = $e(tColName, 6, *)
+					Set tColInfo(c,"type") = $$$jsonLabel
+				} Else {
+					Set tColInfo(c,"name") = tColName
+					Set tColInfo(c,"type") = tColumn.typeClassGetObjectId()
+				}
 			}
 		}
 		Set ..sql = tOrigSQL
@@ -292,8 +304,8 @@ Method %DrawJSON(nocount As %Boolean = {$$$NO}) As %Status [ Internal ]
 				Set tColName = $Get(tColInfo(c,"name"))
 				Set tOutVal = ##class(Form.Util.Converter).logicalToJSON($Get(tColInfo(c,"type")), tVal)
 				// to surround no numbers values and Id by quotes
-				Set:(($Isvalidnum(tOutVal)=$$$NO)||($ZConvert(tColName,"l")="id")||($ZConvert(tColName,"l")="_id")) tOutVal = $Char(34)_tOutVal_$Char(34)
-				Set $List(node,*+1) = """"_tColName_""":"_tOutVal
+				Set:(('$isObject(tOutVal))&&(($Isvalidnum(tOutVal)=$$$NO)||($ZConvert(tColName,"l")="id")||($ZConvert(tColName,"l")="_id"))) tOutVal = $Char(34)_tOutVal_$Char(34)
+				Set $List(node,*+1) = """"_tColName_""":"_$select($isObject(tOutVal):tOutVal.%ToJSON(),1:tOutVal)
 			}
 			Set:(node'="") $List(rows, *+1) = "{"_$ListToString(node,",")_"}"
 		}
@@ -317,9 +329,8 @@ Method %DrawJSON(nocount As %Boolean = {$$$NO}) As %Status [ Internal ]
 Method %OnCreateResultSet(Output tSC As %Status, pInfo As %ZEN.Auxiliary.QueryInfo) As %ResultSet
 {
 	Set:$IsObject($Get(%request)) tMode = %request.Get("mode", 0)
-	Set tRS = ##class(%ResultSet).%New()
-	Set tSC = tRS.Prepare(..sql)
-	Set tRS.RuntimeMode = $Get(tMode, 0)
+	Set tRS = ##class(%SQL.Statement).%New($Get(tMode, 0))
+	Set tSC = tRS.%Prepare(..sql) 
 	Set pInfo.queryText = "sql: "_..sql
 	Return tRS
 }
